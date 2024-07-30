@@ -5,18 +5,17 @@
 import {
   Feature,
   FeatureCollection,
-  Geometry,
-  Polygon,
   MultiLineString,
   MultiPolygon,
-  Position,
-  PolygonCoordinates
-} from '../utils/geojson-types';
+  Polygon,
+  Position
+} from 'geojson';
+import { SupportedGeometry } from '../utils/types';
 
-export class ImmutableFeatureCollection {
-  featureCollection: FeatureCollection;
+export class ImmutableFeatureCollection<T extends SupportedGeometry | undefined = SupportedGeometry> {
+  featureCollection: FeatureCollection<T>;
 
-  constructor(featureCollection: FeatureCollection) {
+  constructor(featureCollection: FeatureCollection<T>) {
     this.featureCollection = featureCollection;
   }
 
@@ -38,7 +37,7 @@ export class ImmutableFeatureCollection {
     featureIndex: number,
     positionIndexes: number[] | null | undefined,
     updatedPosition: Position
-  ): ImmutableFeatureCollection {
+  ): ImmutableFeatureCollection<T> {
     const geometry = this.featureCollection.features[featureIndex].geometry;
 
     const isPolygonal = geometry.type === 'Polygon' || geometry.type === 'MultiPolygon';
@@ -69,7 +68,7 @@ export class ImmutableFeatureCollection {
   removePosition(
     featureIndex: number,
     positionIndexes: number[] | null | undefined
-  ): ImmutableFeatureCollection {
+  ): ImmutableFeatureCollection<T> {
     const geometry = this.featureCollection.features[featureIndex].geometry;
 
     if (geometry.type === 'Point') {
@@ -141,7 +140,7 @@ export class ImmutableFeatureCollection {
     featureIndex: number,
     positionIndexes: number[] | null | undefined,
     positionToAdd: Position
-  ): ImmutableFeatureCollection {
+  ): ImmutableFeatureCollection<T> {
     const geometry = this.featureCollection.features[featureIndex].geometry;
 
     if (geometry.type === 'Point') {
@@ -162,7 +161,7 @@ export class ImmutableFeatureCollection {
     return this.replaceGeometry(featureIndex, updatedGeometry);
   }
 
-  replaceGeometry(featureIndex: number, geometry: Geometry): ImmutableFeatureCollection {
+  replaceGeometry(featureIndex: number, geometry: SupportedGeometry): ImmutableFeatureCollection<T> {
     const updatedFeature: any = {
       ...this.featureCollection.features[featureIndex],
       geometry
@@ -180,17 +179,17 @@ export class ImmutableFeatureCollection {
     return new ImmutableFeatureCollection(updatedFeatureCollection);
   }
 
-  addFeature(feature: Feature): ImmutableFeatureCollection {
+  addFeature<G extends SupportedGeometry>(feature: Feature<G>): ImmutableFeatureCollection<T | G> {
     return this.addFeatures([feature]);
   }
 
-  addFeatures(features: Feature[]): ImmutableFeatureCollection {
-    const updatedFeatureCollection = {
+  addFeatures<G extends SupportedGeometry>(features: Feature<G>[]): ImmutableFeatureCollection<T | G> {
+    const updatedFeatureCollection: FeatureCollection<T | G> = {
       ...this.featureCollection,
       features: [...this.featureCollection.features, ...features]
     };
 
-    return new ImmutableFeatureCollection(updatedFeatureCollection);
+    return new ImmutableFeatureCollection<T | G>(updatedFeatureCollection);
   }
 
   deleteFeature(featureIndex: number) {
@@ -351,7 +350,7 @@ function immutablyAddPosition(
   ];
 }
 
-function pruneGeometryIfNecessary(geometry: Geometry) {
+function pruneGeometryIfNecessary(geometry: SupportedGeometry) {
   switch (geometry.type) {
     case 'Polygon':
       prunePolygonIfNecessary(geometry);
@@ -413,7 +412,7 @@ function pruneMultiPolygonIfNecessary(geometry: MultiPolygon) {
   }
 }
 
-function removeHoleIfNecessary(polygon: PolygonCoordinates, holeIndex: number) {
+function removeHoleIfNecessary(polygon: Position[][], holeIndex: number) {
   const hole = polygon[holeIndex];
   if (hole.length <= 3) {
     polygon.splice(holeIndex, 1);

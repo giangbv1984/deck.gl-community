@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: MIT
 // Copyright (c) vis.gl contributors
 
-import {Feature, FeatureCollection, Position} from '../utils/geojson-types';
+import {Position} from 'geojson';
 import {PointerMoveEvent, StartDraggingEvent, StopDraggingEvent} from '../edit-modes/types';
 import {
   EditHandle,
@@ -11,6 +11,7 @@ import {
   getPickedEditHandle,
   getEditHandlesForGeometry
 } from './mode-handler';
+import { FeatureCollectionWithSupportedGeometry, FeatureWithSupportedGeometry } from '../utils/types';
 
 type HandlePicks = {pickedHandle?: EditHandle; potentialSnapHandle?: EditHandle};
 
@@ -25,7 +26,7 @@ export class SnappableHandler extends ModeHandler {
     this._handler = handler;
   }
 
-  setFeatureCollection(featureCollection: FeatureCollection): void {
+  setFeatureCollection(featureCollection: FeatureCollectionWithSupportedGeometry): void {
     this._handler.setFeatureCollection(featureCollection);
   }
 
@@ -88,7 +89,7 @@ export class SnappableHandler extends ModeHandler {
   // method will return those features along with the features
   // that live in the current layer. Otherwise, this method will simply return the
   // features from the current layer
-  _getSnapTargets(): Feature[] {
+  _getSnapTargets(): FeatureWithSupportedGeometry[] {
     let {additionalSnapTargets} = this.getModeConfig() || {};
     additionalSnapTargets = additionalSnapTargets || [];
 

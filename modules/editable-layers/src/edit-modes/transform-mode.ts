@@ -4,20 +4,21 @@
 
 import {featureCollection} from '@turf/helpers';
 import {PointerMoveEvent, ModeProps, StartDraggingEvent} from './types';
-import {FeatureCollection} from '../utils/geojson-types';
+import {FeatureCollection} from 'geojson';
 import {TranslateMode} from './translate-mode';
 import {ScaleMode} from './scale-mode';
 import {RotateMode} from './rotate-mode';
 
 import {CompositeMode} from './composite-mode';
 import {GeoJsonEditMode} from './geojson-edit-mode';
+import { FeatureCollectionWithSupportedGeometry } from '../utils/types';
 
 export class TransformMode extends CompositeMode {
   constructor() {
     super([new TranslateMode(), new ScaleMode(), new RotateMode()]);
   }
 
-  handlePointerMove(event: PointerMoveEvent, props: ModeProps<FeatureCollection>) {
+  handlePointerMove(event: PointerMoveEvent, props: ModeProps<FeatureCollectionWithSupportedGeometry>) {
     let updatedCursor: string | null = null;
     super.handlePointerMove(event, {
       ...props,
@@ -55,7 +56,7 @@ export class TransformMode extends CompositeMode {
     filteredModes.filter(Boolean).forEach((mode) => mode.handleStartDragging(event, props));
   }
 
-  getGuides(props: ModeProps<FeatureCollection>) {
+  getGuides(props: ModeProps<FeatureCollectionWithSupportedGeometry>) {
     let compositeGuides = super.getGuides(props);
     const rotateMode = (this._modes || []).find((mode) => mode instanceof RotateMode);
 

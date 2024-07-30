@@ -13,11 +13,11 @@ import {
 } from '../../src/utils/utils';
 import {
   Position,
-  FeatureOf,
+  Feature,
   LineString as LineStringType,
   Point as PointType,
-  Viewport
-} from '@deck.gl-community/editable-layers';
+} from 'geojson';
+import { Viewport } from '@deck.gl-community/editable-layers';
 
 const Point = {
   type: 'Feature',
@@ -118,7 +118,7 @@ describe('recursivelyTraverseNestedArrays()', () => {
   });
 
   it('should work for LineString', () => {
-    const results = [];
+    const results:any = [];
     recursivelyTraverseNestedArrays(LineString.geometry.coordinates, [], (array, prefix) => {
       results.push({
         array,
@@ -131,7 +131,7 @@ describe('recursivelyTraverseNestedArrays()', () => {
   });
 
   it('should work for Polygon', () => {
-    const results = [];
+    const results:any = [];
     recursivelyTraverseNestedArrays(Polygon.geometry.coordinates, [], (array, prefix) => {
       results.push({
         array,
@@ -146,7 +146,7 @@ describe('recursivelyTraverseNestedArrays()', () => {
   });
 
   it('should work for MultiPolygon', () => {
-    const results = [];
+    const results:any = [];
     recursivelyTraverseNestedArrays(MultiPolygon.geometry.coordinates, [], (array, prefix) => {
       results.push({
         array,
@@ -193,7 +193,7 @@ describe('nearestPointOnProjectedLine() and related functions', () => {
     expect(mix(1, 2, 1)).toEqual(2);
   });
   it('nearestPointOnProjectedLine()', () => {
-    const line: FeatureOf<LineStringType> = {
+    const line: Feature<LineStringType> = {
       type: 'Feature',
       geometry: {
         type: 'LineString',
@@ -201,14 +201,16 @@ describe('nearestPointOnProjectedLine() and related functions', () => {
           [0, 0, 0],
           [1, 1, 1]
         ]
-      }
+      },
+      properties: {}
     };
-    const inPoint: FeatureOf<PointType> = {
+    const inPoint: Feature<PointType> = {
       type: 'Feature',
       geometry: {
         type: 'Point',
         coordinates: [0.5, 0.5]
-      }
+      },
+      properties: {}
     };
     const viewport: Viewport = {
       // @ts-expect-error TODO

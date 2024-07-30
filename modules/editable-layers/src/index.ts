@@ -21,7 +21,7 @@ export {PROJECTED_PIXEL_SIZE_MULTIPLIER} from './lib/constants';
 export {toDeckColor} from './utils/utils';
 
 // Types
-export type {Color, Style, Viewport} from './utils/types';
+export type {Color, Style, Viewport, SupportedGeometry} from './utils/types';
 
 // Layers
 export {EditableGeoJsonLayer} from './editable-layers/editable-geojson-layer';
@@ -98,31 +98,6 @@ export type {
   // Viewport,
   Tooltip
 } from './edit-modes/types';
-
-export type {
-  Position,
-  PointCoordinates,
-  LineStringCoordinates,
-  PolygonCoordinates,
-  MultiPointCoordinates,
-  MultiLineStringCoordinates,
-  MultiPolygonCoordinates,
-  AnyCoordinates,
-  Point,
-  LineString,
-  Polygon,
-  MultiPoint,
-  MultiLineString,
-  MultiPolygon,
-  Geometry,
-  Polygonal,
-  BoundingBoxArray,
-  FeatureOf,
-  FeatureWithProps,
-  // Feature,
-  FeatureCollection,
-  AnyGeoJson
-} from './utils/geojson-types';
 
 // Experimental
 export {memoize as _memoize} from './utils/memoize';

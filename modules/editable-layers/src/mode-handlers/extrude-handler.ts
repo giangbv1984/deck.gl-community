@@ -170,16 +170,17 @@ export class ExtrudeHandler extends ModifyHandler {
   coordinatesSize(positionIndexes: number[], featureIndex: number) {
     let size = 0;
     const feature = this.getImmutableFeatureCollection().getObject().features[featureIndex];
-    const coordinates: any = feature.geometry.coordinates;
+
+    const coordinates = feature.geometry.coordinates;
     // for Multi polygons, length will be 3
     if (positionIndexes.length === 3) {
       const [a, b] = positionIndexes;
-      if (coordinates.length && coordinates[a].length) {
+      if (coordinates.length && Array.isArray(coordinates[a][b])) {
         size = coordinates[a][b].length;
       }
     } else {
       const [b] = positionIndexes;
-      if (coordinates.length && coordinates[b].length) {
+      if (coordinates.length && Array.isArray(coordinates[b])) {
         size = coordinates[b].length;
       }
     }

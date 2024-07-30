@@ -14,6 +14,7 @@ import {EditableGeoJsonLayer} from './editable-geojson-layer';
 import {DrawRectangleMode} from '../edit-modes/draw-rectangle-mode';
 import {DrawPolygonMode} from '../edit-modes/draw-polygon-mode';
 import {ViewMode} from '../edit-modes/view-mode';
+import turfHelpers from '@turf/helpers';
 
 export const SELECTION_TYPE = {
   NONE: null,
@@ -119,7 +120,7 @@ export class SelectionLayer<DataT, ExtraPropsT> extends CompositeLayer<
     try {
       // turfDifference throws an exception if the polygon
       // intersects with itself (TODO: check if true in all versions)
-      bigPolygon = turfDifference(bigBuffer, landPointsPoly);
+      bigPolygon = turfDifference(turfHelpers.featureCollection([bigBuffer, landPointsPoly]));
     } catch (e) {
       // invalid selection polygon
       console.log('turfDifference() error', e); // eslint-disable-line

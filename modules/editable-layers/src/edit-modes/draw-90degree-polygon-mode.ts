@@ -19,8 +19,9 @@ import {
   GuideFeatureCollection,
   TentativeFeature
 } from './types';
-import {Polygon, LineString, Position, FeatureCollection} from '../utils/geojson-types';
+import {Polygon, LineString, Position, FeatureCollection} from 'geojson';
 import {GeoJsonEditMode} from './geojson-edit-mode';
+import { FeatureCollectionWithSupportedGeometry } from '../utils/types';
 
 export class Draw90DegreePolygonMode extends GeoJsonEditMode {
   createTentativeFeature(props: ModeProps<FeatureCollection>): TentativeFeature {
@@ -98,7 +99,7 @@ export class Draw90DegreePolygonMode extends GeoJsonEditMode {
     super.handlePointerMove(event, props);
   }
 
-  handleClick(event: ClickEvent, props: ModeProps<FeatureCollection>) {
+  handleClick(event: ClickEvent, props: ModeProps<FeatureCollectionWithSupportedGeometry>) {
     const {picks} = event;
     const tentativeFeature = this.getTentativeGuide(props);
     this.addClickSequence(event);

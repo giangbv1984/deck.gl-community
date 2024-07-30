@@ -12,7 +12,7 @@ import {
   nearestPointOnProjectedLine
 } from '../../../src/utils/utils';
 import {nearestPointOnLine} from '../../../src/edit-modes/utils';
-import {Position} from '../../../src/utils/geojson-types';
+import {Position} from 'geojson';
 
 const Point = {
   type: 'Feature',

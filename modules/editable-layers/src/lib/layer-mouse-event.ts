@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: MIT
 // Copyright (c) vis.gl contributors
 
-import {Position} from '../utils/geojson-types';
+import {Position} from 'geojson';
 
 export class LayerMouseEvent {
   canceled: boolean = false;

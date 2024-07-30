@@ -5,14 +5,15 @@
 import turfCentroid from '@turf/centroid';
 import turfBearing from '@turf/bearing';
 import turfTransformRotate from '@turf/transform-rotate';
-import {FeatureCollection, Position} from '../utils/geojson-types';
+import {Position} from 'geojson';
 import {PointerMoveEvent, StartDraggingEvent, StopDraggingEvent} from '../edit-modes/types';
 import {EditAction, ModeHandler} from './mode-handler';
+import {FeatureCollectionWithSupportedGeometry} from '../utils/types';
 
 // TODO edit-modes: delete handlers once EditMode fully implemented
 export class RotateHandler extends ModeHandler {
   _isRotatable: boolean = undefined!;
-  _geometryBeingRotated: FeatureCollection | null | undefined;
+  _geometryBeingRotated: FeatureCollectionWithSupportedGeometry | null | undefined;
 
   handlePointerMove(event: PointerMoveEvent): {
     editAction: EditAction | null | undefined;
@@ -66,17 +67,11 @@ export class RotateHandler extends ModeHandler {
 
   getRotateAction(startDragPoint: Position, currentPoint: Position, editType: string): EditAction {
     const startPosition = startDragPoint;
-    // @ts-expect-error turf types diff
     const centroid = turfCentroid(this._geometryBeingRotated);
     // @ts-expect-error turf types diff
     const angle = getRotationAngle(centroid, startPosition, currentPoint);
 
-    // @ts-expect-error turf type diff
-    const rotatedFeatures: FeatureCollection = turfTransformRotate(
-      // @ts-expect-error turf type diff
-      this._geometryBeingRotated,
-      angle
-    );
+    const rotatedFeatures = turfTransformRotate(this._geometryBeingRotated, angle);
 
     let updatedData = this.getImmutableFeatureCollection();
 

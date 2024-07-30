@@ -4,7 +4,7 @@
 
 import {beforeEach, afterEach, describe, test, it, expect} from 'vitest';
 import turfArea from '@turf/area';
-import {Feature, FeatureCollection} from '../../../src/utils/geojson-types';
+import {Feature, FeatureCollection} from 'geojson';
 import {DrawRectangleMode} from '../../../src/edit-modes/draw-rectangle-mode';
 import {
   createFeatureCollectionProps,

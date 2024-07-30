@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: MIT
 // Copyright (c) vis.gl contributors
 
-import {Position, Feature, FeatureCollection} from '../utils/geojson-types';
+import {Position, Feature, FeatureCollection} from 'geojson';
 import {
   PointerMoveEvent,
   StartDraggingEvent,
@@ -19,6 +19,7 @@ import {
   getEditHandlesForGeometry
 } from './utils';
 import {GeoJsonEditMode} from './geojson-edit-mode';
+import { FeatureCollectionWithSupportedGeometry } from '../utils/types';
 
 type MovementTypeEvent = PointerMoveEvent | StartDraggingEvent | StopDraggingEvent | DraggingEvent;
 
@@ -55,7 +56,7 @@ export class SnappableMode extends GeoJsonEditMode {
 
   _getUpdatedSnapSourceHandle(
     snapSourceHandle: EditHandleFeature,
-    data: FeatureCollection
+    data: FeatureCollectionWithSupportedGeometry
   ): EditHandleFeature {
     const {featureIndex, positionIndexes} = snapSourceHandle.properties;
     if (!Array.isArray(positionIndexes)) {
@@ -109,7 +110,7 @@ export class SnappableMode extends GeoJsonEditMode {
   // If no snap handle has been picked, only display the edit handles of the
   // selected feature. If a snap handle has been picked, display said snap handle
   // along with all snappable points on all non-selected features.
-  getGuides(props: ModeProps<FeatureCollection>): GuideFeatureCollection {
+  getGuides(props: ModeProps<FeatureCollectionWithSupportedGeometry>): GuideFeatureCollection {
     const {modeConfig, lastPointerMoveEvent} = props;
     const {enableSnapping} = modeConfig || {};
 

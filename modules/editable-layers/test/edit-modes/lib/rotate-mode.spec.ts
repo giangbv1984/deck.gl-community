@@ -11,7 +11,7 @@ import {
   createStopDraggingEvent
 } from '../test-utils';
 import {Pick, ModeProps} from '../../../src/edit-modes/types';
-import {FeatureCollection} from '../../../src/utils/geojson-types';
+import {FeatureCollection} from 'geojson';
 
 let rotateMode: RotateMode;
 

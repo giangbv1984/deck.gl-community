@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: MIT
 // Copyright (c) vis.gl contributors
 
-import {Position, FeatureCollection} from '../../src/utils/geojson-types';
+import {Position, FeatureCollection} from 'geojson';
 import {ClickEvent, PointerMoveEvent, StopDraggingEvent} from '../../src/edit-modes/types';
 
 export const FeatureType = {
@@ -334,6 +334,7 @@ export function createPointerMoveEvent(mapCoords: Position, picks: any[] = []): 
     pointerDownPicks: null,
     pointerDownScreenCoords: null,
     pointerDownMapCoords: null,
+    cancelPan: () => {},
     sourceEvent: null
   };
 }

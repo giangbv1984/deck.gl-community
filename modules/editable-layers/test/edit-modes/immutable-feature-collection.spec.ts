@@ -2,16 +2,26 @@
 // SPDX-License-Identifier: MIT
 // Copyright (c) vis.gl contributors
 
-import {beforeEach, describe, it, expect} from 'vitest';
+import {
+  Feature,
+  LineString,
+  MultiLineString,
+  MultiPoint,
+  MultiPolygon,
+  Point,
+  Polygon
+} from 'geojson';
+import {beforeEach, describe, expect, it} from 'vitest';
 import {ImmutableFeatureCollection} from '../../src/edit-modes/immutable-feature-collection';
+import { FeatureCollectionWithSupportedGeometry } from '../../src/utils/types';
 
-let pointFeature;
-let lineStringFeature;
-let polygonFeature;
-let multiPointFeature;
-let multiLineStringFeature;
-let multiPolygonFeature;
-let featureCollection;
+let pointFeature: Feature<Point>;
+let lineStringFeature: Feature<LineString>;
+let polygonFeature: Feature<Polygon>;
+let multiPointFeature: Feature<MultiPoint>;
+let multiLineStringFeature: Feature<MultiLineString>;
+let multiPolygonFeature: Feature<MultiPolygon>;
+let featureCollection: FeatureCollectionWithSupportedGeometry;
 
 beforeEach(() => {
   pointFeature = {
@@ -414,7 +424,8 @@ describe('removePosition()', () => {
               [0, 1],
               [2, 3]
             ]
-          }
+          },
+          properties: {}
         }
       ]
     });
@@ -656,6 +667,7 @@ describe('addPosition()', () => {
       type: 'FeatureCollection',
       features: [polygonFeature]
     });
+
     const updatedFeatures = features
       .addPosition(0, [0, 1], [0, -1])
       .addPosition(0, [1, 4], [0, -0.5]);
@@ -732,7 +744,7 @@ describe('addFeatures()', () => {
       type: 'FeatureCollection',
       features: []
     });
-    features.addFeatures([multiPointFeature, pointFeature]);
+    features.addFeatures<Point | MultiPoint>([multiPointFeature, pointFeature]);
 
     expect(features.getObject().features.length).toEqual(0);
   });
@@ -742,7 +754,9 @@ describe('addFeatures()', () => {
       type: 'FeatureCollection',
       features: []
     });
-    const actualFeatures = features.addFeatures([multiPointFeature, pointFeature]).getObject();
+    const actualFeatures = features
+      .addFeatures<MultiPoint | Point>([multiPointFeature, pointFeature])
+      .getObject();
 
     const expectedFeatures = {
       type: 'FeatureCollection',
@@ -790,7 +804,7 @@ describe('deleteFeature()', () => {
   });
 
   it('delete feature', () => {
-    const features = new ImmutableFeatureCollection({
+    const features = new ImmutableFeatureCollection<MultiLineString | MultiPoint>({
       type: 'FeatureCollection',
       features: [multiPointFeature, multiLineStringFeature]
     });
@@ -827,7 +841,7 @@ describe('deleteFeatures()', () => {
   });
 
   it('delete single feature', () => {
-    const features = new ImmutableFeatureCollection({
+    const features = new ImmutableFeatureCollection<MultiPoint | MultiLineString>({
       type: 'FeatureCollection',
       features: [multiPointFeature, multiLineStringFeature]
     });
@@ -842,7 +856,7 @@ describe('deleteFeatures()', () => {
   });
 
   it('delete multiple features', () => {
-    const features = new ImmutableFeatureCollection({
+    const features = new ImmutableFeatureCollection<MultiPoint | MultiLineString>({
       type: 'FeatureCollection',
       features: [multiPointFeature, multiLineStringFeature]
     });
@@ -859,7 +873,7 @@ describe('deleteFeatures()', () => {
 
 describe('replacePosition() with elevation', () => {
   it('replaces position in Point', () => {
-    const elevatedPointFeature = {
+    const elevatedPointFeature: Feature<Point> = {
       type: 'Feature',
       properties: {},
       geometry: {type: 'Point', coordinates: [1, 2, 1000]}
@@ -878,7 +892,7 @@ describe('replacePosition() with elevation', () => {
   });
 
   it('replaces first position in LineString', () => {
-    const elevatedLineStringFeature = {
+    const elevatedLineStringFeature: Feature<LineString> = {
       type: 'Feature',
       properties: {},
       geometry: {

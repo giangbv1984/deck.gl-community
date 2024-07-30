@@ -7,7 +7,7 @@ import bearing from '@turf/bearing';
 import lineIntersect from '@turf/line-intersect';
 import turfDistance from '@turf/distance';
 import {point, lineString} from '@turf/helpers';
-import {Polygon, Position} from '../utils/geojson-types';
+import {Polygon, Position} from 'geojson';
 import {generatePointsParallelToLinePoints} from '../utils/utils';
 import {ClickEvent, PointerMoveEvent} from '../edit-modes/types';
 import {
@@ -76,7 +76,8 @@ export class Draw90DegreePolygonHandler extends ModeHandler {
         geometry: {
           type: 'LineString',
           coordinates: [...clickSequence, p3]
-        }
+        },
+        properties: {}
       });
     } else {
       // Draw a Polygon connecting all the clicked points with the hovered point
@@ -85,7 +86,8 @@ export class Draw90DegreePolygonHandler extends ModeHandler {
         geometry: {
           type: 'Polygon',
           coordinates: [[...clickSequence, p3, clickSequence[0]]]
-        }
+        },
+        properties: {}
       });
     }
 

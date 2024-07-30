@@ -5,14 +5,15 @@
 import turfCentroid from '@turf/centroid';
 import turfDistance from '@turf/distance';
 import turfTransformScale from '@turf/transform-scale';
-import {FeatureCollection, Position} from '../utils/geojson-types';
+import {Position} from 'geojson';
 import {PointerMoveEvent, StartDraggingEvent, StopDraggingEvent} from '../edit-modes/types';
 import {EditAction, ModeHandler} from './mode-handler';
+import { FeatureCollectionWithSupportedGeometry } from '../utils/types';
 
 // TODO edit-modes: delete handlers once EditMode fully implemented
 export class ScaleHandler extends ModeHandler {
   _isScalable: boolean = undefined!;
-  _geometryBeingScaled: FeatureCollection | null | undefined;
+  _geometryBeingScaled: FeatureCollectionWithSupportedGeometry | null | undefined;
 
   handlePointerMove(event: PointerMoveEvent): {
     editAction: EditAction | null | undefined;
@@ -66,13 +67,10 @@ export class ScaleHandler extends ModeHandler {
 
   getScaleAction(startDragPoint: Position, currentPoint: Position, editType: string): EditAction {
     const startPosition = startDragPoint;
-    // @ts-expect-error turf types diff
     const centroid = turfCentroid(this._geometryBeingScaled);
     // @ts-expect-error turf types diff
     const factor = getScaleFactor(centroid, startPosition, currentPoint);
-    // @ts-expect-error turf type diff
-    const scaledFeatures: FeatureCollection = turfTransformScale(
-      // @ts-expect-error turf type diff
+    const scaledFeatures: FeatureCollectionWithSupportedGeometry = turfTransformScale(
       this._geometryBeingScaled,
       factor,
       {

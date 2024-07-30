@@ -43,9 +43,9 @@ import {
   ElevatedEditHandleLayer,
   SELECTION_TYPE,
   GeoJsonEditMode,
-  Color,
-  FeatureCollection
+  Color
 } from '@deck.gl-community/editable-layers';
+import {FeatureCollection, Point, MultiLineString} from 'geojson';
 
 import {PathMarkerLayer} from '@deck.gl-community/layers';
 
@@ -61,6 +61,7 @@ import {
   ToolboxButton,
   ToolboxCheckbox
 } from './toolbox';
+import {GeoJsonLayer} from '@deck.gl/layers';
 
 type RGBAColor = Color;
 const COMPOSITE_MODE = new CompositeMode([new DrawLineStringMode(), new ModifyMode()]);
@@ -165,7 +166,7 @@ const TWO_CLICK_POLYGON_MODES = [
   DrawEllipseByBoundingBoxMode
 ];
 
-const EMPTY_FEATURE_COLLECTION = {
+const EMPTY_FEATURE_COLLECTION: FeatureCollection = {
   type: 'FeatureCollection',
   features: []
 };
@@ -220,7 +221,7 @@ export default class Example extends React.Component<
   {},
   {
     viewport: Record<string, any>;
-    testFeatures: any;
+    testFeatures: FeatureCollection;
     mode: typeof GeoJsonEditMode;
     modeConfig: any;
     pointsRemovable: boolean;
@@ -241,7 +242,7 @@ export default class Example extends React.Component<
 
     this.state = {
       viewport: initialViewport,
-      testFeatures: sampleGeoJson,
+      testFeatures: sampleGeoJson as FeatureCollection<Point | MultiLineString>,
       mode: DrawPolygonMode,
       modeConfig: null,
       pointsRemovable: true,
@@ -293,7 +294,7 @@ export default class Example extends React.Component<
   _loadSample = (type: string) => {
     if (type === 'mixed') {
       this.setState({
-        testFeatures: sampleGeoJson,
+        testFeatures: sampleGeoJson as FeatureCollection<Point | MultiLineString>,
         selectedFeatureIndexes: []
       });
     } else if (type === 'complex') {
@@ -1018,6 +1019,84 @@ export default class Example extends React.Component<
     }
 
     const editableGeoJsonLayer = new EditableGeoJsonLayer({
+      id: 'geojson',
+      data: testFeatures,
+      // @ts-expect-error TODO
+      selectedFeatureIndexes,
+      mode,
+      modeConfig,
+      autoHighlight: false,
+
+      // Editing callbacks
+      onEdit: this.onEdit,
+
+      editHandleType: this.state.editHandleType,
+
+      // test using icons for edit handles
+      editHandleIconAtlas: iconSheet,
+      editHandleIconMapping: {
+        intermediate: {
+          x: 0,
+          y: 0,
+          width: 58,
+          height: 58,
+          mask: false
+        },
+        existing: {
+          x: 58,
+          y: 0,
+          width: 58,
+          height: 58,
+          mask: false
+        },
+        'snap-source': {
+          x: 58,
+          y: 0,
+          width: 58,
+          height: 58,
+          mask: false
+        },
+        'snap-target': {
+          x: 0,
+          y: 0,
+          width: 58,
+          height: 58,
+          mask: false
+        }
+      },
+      getEditHandleIcon: (d) => getEditHandleTypeFromEitherLayer(d),
+      getEditHandleIconSize: 40,
+      getEditHandleIconColor: getEditHandleColor,
+
+      // Specify the same GeoJsonLayer props
+      // lineWidthMinPixels: 2,
+      pointRadiusMinPixels: 5,
+      // getLineDashArray: () => [0, 0],
+
+      // Accessors receive an isSelected argument
+      getFillColor: this.getFillColor,
+      getLineColor: this.getLineColor,
+
+      // Can customize editing points props
+      getEditHandlePointColor: getEditHandleColor,
+      editHandlePointRadiusScale: 2,
+
+      // customize tentative feature style
+      // getTentativeLineDashArray: () => [7, 4],
+      // getTentativeLineColor: () => [0x8f, 0x8f, 0x8f, 0xff],
+
+      _subLayerProps,
+
+      parameters: {
+        depthTest: true,
+        depthMask: false,
+
+        blend: true,
+        blendEquation: GL.FUNC_ADD,
+        blendFunc: [GL.SRC_ALPHA, GL.ONE_MINUS_SRC_ALPHA]
+      }
+    });
+    const goJsonLayer = new GeoJsonLayer({
       id: 'geojson',
       data: testFeatures,
       // @ts-expect-error TODO

@@ -11,11 +11,12 @@ import {
   GuideFeatureCollection,
   TentativeFeature
 } from './types';
-import {Polygon, FeatureCollection, FeatureOf, Position} from '../utils/geojson-types';
+import {Polygon, FeatureCollection, Feature, Position} from 'geojson';
 import {GeoJsonEditMode} from './geojson-edit-mode';
+import { FeatureCollectionWithSupportedGeometry } from '../utils/types';
 
 export class TwoClickPolygonMode extends GeoJsonEditMode {
-  handleClick(event: ClickEvent, props: ModeProps<FeatureCollection>) {
+  handleClick(event: ClickEvent, props: ModeProps<FeatureCollectionWithSupportedGeometry>) {
     if (props.modeConfig && props.modeConfig.dragToDraw) {
       // handled in drag handlers
       return;
@@ -36,7 +37,7 @@ export class TwoClickPolygonMode extends GeoJsonEditMode {
     event.cancelPan();
   }
 
-  handleStopDragging(event: StopDraggingEvent, props: ModeProps<FeatureCollection>): void {
+  handleStopDragging(event: StopDraggingEvent, props: ModeProps<FeatureCollectionWithSupportedGeometry>): void {
     if (!props.modeConfig || !props.modeConfig.dragToDraw) {
       // handled in click handlers
       return;
@@ -46,7 +47,7 @@ export class TwoClickPolygonMode extends GeoJsonEditMode {
     this.checkAndFinishPolygon(props);
   }
 
-  checkAndFinishPolygon(props: ModeProps<FeatureCollection>) {
+  checkAndFinishPolygon(props: ModeProps<FeatureCollectionWithSupportedGeometry>) {
     const clickSequence = this.getClickSequence();
     const tentativeFeature = this.getTentativeGuide(props);
 
@@ -55,7 +56,7 @@ export class TwoClickPolygonMode extends GeoJsonEditMode {
       tentativeFeature &&
       tentativeFeature.geometry.type === 'Polygon'
     ) {
-      const feature: FeatureOf<Polygon> = {
+      const feature: Feature<Polygon> = {
         type: 'Feature',
         properties: {
           shape: tentativeFeature.properties.shape
@@ -111,7 +112,7 @@ export class TwoClickPolygonMode extends GeoJsonEditMode {
     coord1: Position,
     coord2: Position,
     modeConfig: any
-  ): FeatureOf<Polygon> | null | undefined {
+  ): Feature<Polygon> | null | undefined {
     return null;
   }
 

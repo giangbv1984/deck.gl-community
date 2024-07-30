@@ -9,11 +9,12 @@ import {
   GuideFeatureCollection,
   TentativeFeature
 } from './types';
-import {Position, Polygon, FeatureOf, FeatureCollection} from '../utils/geojson-types';
+import {Position, Polygon, Feature, FeatureCollection} from 'geojson';
 import {GeoJsonEditMode} from './geojson-edit-mode';
+import { FeatureCollectionWithSupportedGeometry } from '../utils/types';
 
 export class ThreeClickPolygonMode extends GeoJsonEditMode {
-  handleClick(event: ClickEvent, props: ModeProps<FeatureCollection>) {
+  handleClick(event: ClickEvent, props: ModeProps<FeatureCollectionWithSupportedGeometry>) {
     this.addClickSequence(event);
     const clickSequence = this.getClickSequence();
     const tentativeFeature = this.getTentativeGuide(props);
@@ -85,7 +86,7 @@ export class ThreeClickPolygonMode extends GeoJsonEditMode {
     coord2: Position,
     coord3: Position,
     modeConfig: any
-  ): FeatureOf<Polygon> | null | undefined {
+  ): Feature<Polygon> | null | undefined {
     return null;
   }
 

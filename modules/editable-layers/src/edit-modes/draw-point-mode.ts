@@ -3,8 +3,9 @@
 // Copyright (c) vis.gl contributors
 
 import {ClickEvent, PointerMoveEvent, ModeProps, TentativeFeature} from './types';
-import {FeatureCollection, Point} from '../utils/geojson-types';
+import {FeatureCollection, Point} from 'geojson';
 import {GeoJsonEditMode} from './geojson-edit-mode';
+import { FeatureCollectionWithSupportedGeometry } from '../utils/types';
 
 export class DrawPointMode extends GeoJsonEditMode {
   createTentativeFeature(props: ModeProps<FeatureCollection>): TentativeFeature {
@@ -23,7 +24,7 @@ export class DrawPointMode extends GeoJsonEditMode {
     };
   }
 
-  handleClick({mapCoords}: ClickEvent, props: ModeProps<FeatureCollection>): void {
+  handleClick({mapCoords}: ClickEvent, props: ModeProps<FeatureCollectionWithSupportedGeometry>): void {
     const geometry: Point = {
       type: 'Point',
       coordinates: mapCoords
@@ -32,7 +33,7 @@ export class DrawPointMode extends GeoJsonEditMode {
     props.onEdit(this.getAddFeatureAction(geometry, props.data));
   }
 
-  handlePointerMove(event: PointerMoveEvent, props: ModeProps<FeatureCollection>) {
+  handlePointerMove(event: PointerMoveEvent, props: ModeProps<FeatureCollectionWithSupportedGeometry>) {
     props.onUpdateCursor('cell');
     super.handlePointerMove(event, props);
   }

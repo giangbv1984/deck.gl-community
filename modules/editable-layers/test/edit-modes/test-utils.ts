@@ -3,7 +3,7 @@
 // Copyright (c) vis.gl contributors
 
 import {vi} from 'vitest';
-import {Position, FeatureCollection} from '../../src/utils/geojson-types';
+import {Position, FeatureCollection} from 'geojson';
 import {
   ModeProps,
   ClickEvent,
@@ -12,6 +12,7 @@ import {
   StopDraggingEvent,
   Pick
 } from '../../src/edit-modes/types';
+import { FeatureCollectionWithSupportedGeometry } from '../../src/utils/types';
 
 export const FeatureType = {
   POINT: 'Point',
@@ -306,7 +307,7 @@ export function getMockFeatureDetails(featureType: string) {
   return featureDetails;
 }
 
-let lastCoords: Position = null;
+let lastCoords: Position;
 
 export function createClickEvent(mapCoords: Position, picks: Pick[] = []): ClickEvent {
   lastCoords = mapCoords;
@@ -380,8 +381,8 @@ export function createPointerMoveEvent(mapCoords?: Position, picks?: Pick[]): Po
 }
 
 export function createFeatureCollectionProps(
-  overrides: Partial<ModeProps<FeatureCollection>> = {}
-): ModeProps<FeatureCollection> {
+  overrides: Partial<ModeProps<FeatureCollectionWithSupportedGeometry>> = {}
+): ModeProps<FeatureCollectionWithSupportedGeometry> {
   return {
     // @ts-expect-error TODO
     data: createFeatureCollection(),

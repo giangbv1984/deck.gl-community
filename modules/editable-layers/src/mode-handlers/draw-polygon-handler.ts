@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: MIT
 // Copyright (c) vis.gl contributors
 
-import {Polygon, Position} from '../utils/geojson-types';
+import {Polygon, Position} from 'geojson';
 import {ClickEvent, PointerMoveEvent} from '../edit-modes/types';
 import {
   EditAction,
@@ -107,7 +107,8 @@ export class DrawPolygonHandler extends ModeHandler {
         geometry: {
           type: 'LineString',
           coordinates: [...clickSequence, mapCoords]
-        }
+        },
+        properties: {}
       });
     } else {
       // Draw a Polygon connecting all the clicked points with the hovered point
@@ -116,7 +117,8 @@ export class DrawPolygonHandler extends ModeHandler {
         geometry: {
           type: 'Polygon',
           coordinates: [[...clickSequence, mapCoords, clickSequence[0]]]
-        }
+        },
+        properties: {}
       });
     }
 
