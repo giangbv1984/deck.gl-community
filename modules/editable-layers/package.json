@@ -65,13 +65,9 @@
     "@types/geojson": "^7946.0.14",
     "cubic-hermite-spline": "^1.0.1",
     "eventemitter3": "^5.0.0",
-    "geojson": "^0.5.0",
     "lodash.throttle": "^4.1.1",
     "uuid": "9.0.0",
     "viewport-mercator-project": ">=6.2.3"
-  },
-  "devDependencies": {
-    "@types/geojson": "^7946.0.14"
   },
   "peerDependencies": {
     "@deck.gl/core": "^9.0.12",
