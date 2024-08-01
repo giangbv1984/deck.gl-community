@@ -11,10 +11,11 @@ import turfBearing from '@turf/bearing';
 import turfDistance from '@turf/distance';
 import turfDestination from '@turf/destination';
 import turfPolygonToLine from '@turf/polygon-to-line';
-import nearestPointOnLine, {NearestPointOnLine} from '@turf/nearest-point-on-line';
+import nearestPointOnLine from '@turf/nearest-point-on-line';
 import {generatePointsParallelToLinePoints} from '../utils/utils';
 import {EditAction, ModeHandler} from './mode-handler';
 import {ClickEvent, PointerMoveEvent} from '../edit-modes/types';
+import type {Feature, Point} from 'geojson';
 
 // TODO edit-modes: delete handlers once EditMode fully implemented
 export class SplitPolygonHandler extends ModeHandler {
@@ -32,7 +33,7 @@ export class SplitPolygonHandler extends ModeHandler {
 
       const lines = feature.type === 'FeatureCollection' ? feature.features : [feature];
       let minDistance = Number.MAX_SAFE_INTEGER;
-      let closestPoint: NearestPointOnLine | null = null;
+      let closestPoint: Feature<Point> | null = null;
       // If Multipolygon, then we should find nearest polygon line and stick split to it.
       lines.forEach((line) => {
         const snapPoint = nearestPointOnLine(line, firstPoint);
@@ -119,7 +120,8 @@ export class SplitPolygonHandler extends ModeHandler {
       geometry: {
         type: 'LineString',
         coordinates: [...clickSequence, this.calculateMapCoords(clickSequence, mapCoords)]
-      }
+      },
+      properties: {}
     });
 
     return result;
@@ -137,7 +139,6 @@ export class SplitPolygonHandler extends ModeHandler {
       gap = 0.1;
       units = 'centimeters';
     }
-    // @ts-expect-error turf type diff
     const buffer = turfBuffer(tentativeFeature, gap, {units});
     // @ts-expect-error turf type diff
     const updatedGeometry = turfDifference(selectedGeometry, buffer);

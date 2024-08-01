@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: MIT
 // Copyright (c) vis.gl contributors
 
-import {LineString} from '../utils/geojson-types';
+import type {LineString} from 'geojson';
 import {generatePointsParallelToLinePoints} from '../utils/utils';
 import {PointerMoveEvent} from '../edit-modes/types';
 import {EditAction} from './mode-handler';
@@ -30,7 +30,8 @@ export class DrawRectangleUsingThreePointsHandler extends ThreeClickPolygonHandl
         geometry: {
           type: 'LineString',
           coordinates: [clickSequence[0], mapCoords]
-        }
+        },
+        properties: {}
       });
     } else if (clickSequence.length === 2) {
       const lineString: LineString = {
@@ -55,7 +56,8 @@ export class DrawRectangleUsingThreePointsHandler extends ThreeClickPolygonHandl
               p1
             ]
           ]
-        }
+        },
+        properties: {}
       });
     }
 

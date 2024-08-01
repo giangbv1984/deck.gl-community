@@ -22,19 +22,19 @@ import {
   GuideFeatureCollection
 } from './types';
 import {getPickedEditHandle} from './utils';
-import {FeatureCollection, Position} from '../utils/geojson-types';
+import type {FeatureCollection, Position} from 'geojson';
 import {GeoJsonEditMode, GeoJsonEditAction, getIntermediatePosition} from './geojson-edit-mode';
 import {ImmutableFeatureCollection} from './immutable-feature-collection';
+import { FeatureCollectionWithSupportedGeometry } from '../utils/types';
 
 export class RotateMode extends GeoJsonEditMode {
   _selectedEditHandle: EditHandleFeature | null | undefined;
-  _geometryBeingRotated: FeatureCollection | null | undefined;
+  _geometryBeingRotated: FeatureCollectionWithSupportedGeometry | null | undefined;
   _isRotating = false;
 
   _isSinglePointGeometrySelected = (geometry: FeatureCollection | null | undefined): boolean => {
     const {features} = geometry || {};
     if (Array.isArray(features) && features.length === 1) {
-      // @ts-expect-error turf type diff
       const {type}: {type: string} = getGeom(features[0]);
       return type === 'Point';
     }
@@ -43,7 +43,7 @@ export class RotateMode extends GeoJsonEditMode {
 
   getIsRotating = () => this._isRotating;
 
-  getGuides(props: ModeProps<FeatureCollection>): GuideFeatureCollection {
+  getGuides(props: ModeProps<FeatureCollectionWithSupportedGeometry>): GuideFeatureCollection {
     const selectedGeometry =
       this._geometryBeingRotated || this.getSelectedFeaturesAsFeatureCollection(props);
 
@@ -53,7 +53,6 @@ export class RotateMode extends GeoJsonEditMode {
 
     if (this._isRotating) {
       // Display rotate pivot
-      // @ts-expect-error turf types diff
       return featureCollection([turfCentroid(selectedGeometry)]) as GuideFeatureCollection;
     }
 
@@ -96,7 +95,7 @@ export class RotateMode extends GeoJsonEditMode {
     return featureCollection(outFeatures);
   }
 
-  handleDragging(event: DraggingEvent, props: ModeProps<FeatureCollection>) {
+  handleDragging(event: DraggingEvent, props: ModeProps<FeatureCollectionWithSupportedGeometry>) {
     if (!this._isRotating) {
       return;
     }
@@ -114,7 +113,7 @@ export class RotateMode extends GeoJsonEditMode {
     event.cancelPan();
   }
 
-  handlePointerMove(event: PointerMoveEvent, props: ModeProps<FeatureCollection>) {
+  handlePointerMove(event: PointerMoveEvent, props: ModeProps<FeatureCollectionWithSupportedGeometry>) {
     if (!this._isRotating) {
       const selectedEditHandle = getPickedEditHandle(event.picks);
       this._selectedEditHandle =
@@ -126,14 +125,14 @@ export class RotateMode extends GeoJsonEditMode {
     this.updateCursor(props);
   }
 
-  handleStartDragging(event: StartDraggingEvent, props: ModeProps<FeatureCollection>) {
+  handleStartDragging(event: StartDraggingEvent, props: ModeProps<FeatureCollectionWithSupportedGeometry>) {
     if (this._selectedEditHandle) {
       this._isRotating = true;
       this._geometryBeingRotated = this.getSelectedFeaturesAsFeatureCollection(props);
     }
   }
 
-  handleStopDragging(event: StopDraggingEvent, props: ModeProps<FeatureCollection>) {
+  handleStopDragging(event: StopDraggingEvent, props: ModeProps<FeatureCollectionWithSupportedGeometry>) {
     if (this._isRotating) {
       // Rotate the geometry
       const rotateAction = this.getRotateAction(
@@ -166,19 +165,16 @@ export class RotateMode extends GeoJsonEditMode {
     startDragPoint: Position,
     currentPoint: Position,
     editType: string,
-    props: ModeProps<FeatureCollection>
+    props: ModeProps<FeatureCollectionWithSupportedGeometry>
   ): GeoJsonEditAction | null | undefined {
     if (!this._geometryBeingRotated) {
       return null;
     }
-    // @ts-expect-error turf types diff
     const centroid = turfCentroid(this._geometryBeingRotated);
     // @ts-expect-error turf types diff
     const angle = getRotationAngle(centroid, startDragPoint, currentPoint);
 
-    // @ts-expect-error turf types too wide
-    const rotatedFeatures: FeatureCollection = turfTransformRotate(
-      // @ts-expect-error turf types too wide
+    const rotatedFeatures = turfTransformRotate(
       this._geometryBeingRotated,
       angle,
       {

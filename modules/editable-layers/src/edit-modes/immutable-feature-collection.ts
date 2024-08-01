@@ -2,21 +2,22 @@
 // SPDX-License-Identifier: MIT
 // Copyright (c) vis.gl contributors
 
-import {
+import type {
   Feature,
   FeatureCollection,
-  Geometry,
-  Polygon,
   MultiLineString,
   MultiPolygon,
-  Position,
-  PolygonCoordinates
-} from '../utils/geojson-types';
+  Polygon,
+  Position
+} from 'geojson';
+import {SupportedGeometry} from '../utils/types';
 
-export class ImmutableFeatureCollection {
-  featureCollection: FeatureCollection;
+export class ImmutableFeatureCollection<
+  T extends SupportedGeometry | undefined = SupportedGeometry
+> {
+  featureCollection: FeatureCollection<T>;
 
-  constructor(featureCollection: FeatureCollection) {
+  constructor(featureCollection: FeatureCollection<T>) {
     this.featureCollection = featureCollection;
   }
 
@@ -38,7 +39,7 @@ export class ImmutableFeatureCollection {
     featureIndex: number,
     positionIndexes: number[] | null | undefined,
     updatedPosition: Position
-  ): ImmutableFeatureCollection {
+  ): ImmutableFeatureCollection<T> {
     const geometry = this.featureCollection.features[featureIndex].geometry;
 
     const isPolygonal = geometry.type === 'Polygon' || geometry.type === 'MultiPolygon';
@@ -69,23 +70,23 @@ export class ImmutableFeatureCollection {
   removePosition(
     featureIndex: number,
     positionIndexes: number[] | null | undefined
-  ): ImmutableFeatureCollection {
+  ): ImmutableFeatureCollection<T> {
     const geometry = this.featureCollection.features[featureIndex].geometry;
 
     if (geometry.type === 'Point') {
-      throw Error("Can't remove a position from a Point or there'd be nothing left");
+      throw Error('Can\'t remove a position from a Point or there\'d be nothing left');
     }
     if (
       geometry.type === 'MultiPoint' && // only 1 point left
       geometry.coordinates.length < 2
     ) {
-      throw Error("Can't remove the last point of a MultiPoint or there'd be nothing left");
+      throw Error('Can\'t remove the last point of a MultiPoint or there\'d be nothing left');
     }
     if (
       geometry.type === 'LineString' && // only 2 positions
       geometry.coordinates.length < 3
     ) {
-      throw Error("Can't remove position. LineString must have at least two positions");
+      throw Error('Can\'t remove position. LineString must have at least two positions');
     }
     if (
       geometry.type === 'Polygon' && // outer ring is a triangle
@@ -93,14 +94,14 @@ export class ImmutableFeatureCollection {
       Array.isArray(positionIndexes) && // trying to remove from outer ring
       positionIndexes[0] === 0
     ) {
-      throw Error("Can't remove position. Polygon's outer ring must have at least four positions");
+      throw Error('Can\'t remove position. Polygon\'s outer ring must have at least four positions');
     }
     if (
       geometry.type === 'MultiLineString' && // only 1 LineString left
       geometry.coordinates.length === 1 && // only 2 positions
       geometry.coordinates[0].length < 3
     ) {
-      throw Error("Can't remove position. MultiLineString must have at least two positions");
+      throw Error('Can\'t remove position. MultiLineString must have at least two positions');
     }
     if (
       geometry.type === 'MultiPolygon' && // only 1 polygon left
@@ -111,7 +112,7 @@ export class ImmutableFeatureCollection {
       positionIndexes[1] === 0
     ) {
       throw Error(
-        "Can't remove position. MultiPolygon's outer ring must have at least four positions"
+        'Can\'t remove position. MultiPolygon\'s outer ring must have at least four positions'
       );
     }
 
@@ -141,7 +142,7 @@ export class ImmutableFeatureCollection {
     featureIndex: number,
     positionIndexes: number[] | null | undefined,
     positionToAdd: Position
-  ): ImmutableFeatureCollection {
+  ): ImmutableFeatureCollection<T> {
     const geometry = this.featureCollection.features[featureIndex].geometry;
 
     if (geometry.type === 'Point') {
@@ -162,7 +163,10 @@ export class ImmutableFeatureCollection {
     return this.replaceGeometry(featureIndex, updatedGeometry);
   }
 
-  replaceGeometry(featureIndex: number, geometry: Geometry): ImmutableFeatureCollection {
+  replaceGeometry(
+    featureIndex: number,
+    geometry: SupportedGeometry
+  ): ImmutableFeatureCollection<T> {
     const updatedFeature: any = {
       ...this.featureCollection.features[featureIndex],
       geometry
@@ -180,17 +184,19 @@ export class ImmutableFeatureCollection {
     return new ImmutableFeatureCollection(updatedFeatureCollection);
   }
 
-  addFeature(feature: Feature): ImmutableFeatureCollection {
+  addFeature<G extends SupportedGeometry>(feature: Feature<G>): ImmutableFeatureCollection<T | G> {
     return this.addFeatures([feature]);
   }
 
-  addFeatures(features: Feature[]): ImmutableFeatureCollection {
-    const updatedFeatureCollection = {
+  addFeatures<G extends SupportedGeometry>(
+    features: Feature<G>[]
+  ): ImmutableFeatureCollection<T | G> {
+    const updatedFeatureCollection: FeatureCollection<T | G> = {
       ...this.featureCollection,
       features: [...this.featureCollection.features, ...features]
     };
 
-    return new ImmutableFeatureCollection(updatedFeatureCollection);
+    return new ImmutableFeatureCollection<T | G>(updatedFeatureCollection);
   }
 
   deleteFeature(featureIndex: number) {
@@ -351,7 +357,7 @@ function immutablyAddPosition(
   ];
 }
 
-function pruneGeometryIfNecessary(geometry: Geometry) {
+function pruneGeometryIfNecessary(geometry: SupportedGeometry) {
   switch (geometry.type) {
     case 'Polygon':
       prunePolygonIfNecessary(geometry);
@@ -413,7 +419,7 @@ function pruneMultiPolygonIfNecessary(geometry: MultiPolygon) {
   }
 }
 
-function removeHoleIfNecessary(polygon: PolygonCoordinates, holeIndex: number) {
+function removeHoleIfNecessary(polygon: Position[][], holeIndex: number) {
   const hole = polygon[holeIndex];
   if (hole.length <= 3) {
     polygon.splice(holeIndex, 1);

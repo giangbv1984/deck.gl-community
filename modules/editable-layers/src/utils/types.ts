@@ -2,6 +2,14 @@
 // SPDX-License-Identifier: MIT
 // Copyright (c) vis.gl contributors
 
+import type {
+  Feature,
+  FeatureCollection,
+  Geometry,
+  GeometryCollection,
+  Position,
+} from 'geojson';
+
 export type LayerMouseEventResult = {
   eventConsumed?: boolean;
   eventSoftConsumed?: boolean;
@@ -41,3 +49,11 @@ export type Viewport = {
   bearing?: number;
   pitch?: number;
 };
+
+export type SupportedGeometry = Exclude<Geometry, GeometryCollection>;
+
+export type AnyCoordinates = Position | Position[] | Position[][] | Position[][][];
+
+export type FeatureCollectionWithSupportedGeometry = FeatureCollection<SupportedGeometry>;
+
+export type FeatureWithSupportedGeometry = Feature<SupportedGeometry>;

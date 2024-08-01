@@ -7,6 +7,7 @@ import turfDifference from '@turf/difference';
 import turfDistance from '@turf/distance';
 
 import {Color} from '../../utils/types';
+import turfHelpers from '@turf/helpers';
 
 const POLYGON_LINE_COLOR = [0, 255, 0, 255];
 const POLYGON_FILL_COLOR = [255, 255, 255, 90];
@@ -203,7 +204,7 @@ export class DeckDrawer {
         try {
           // turfDifference throws an exception if the polygon
           // intersects with itself
-          bigPolygon = turfDifference(bigBuffer, landPointsPoly);
+          bigPolygon = turfDifference(turfHelpers.featureCollection([bigBuffer, landPointsPoly]));
           dataPick.push({
             polygon: bigPolygon.geometry.coordinates,
             fillColor: [0, 0, 0, 1]

@@ -11,16 +11,11 @@ import {
   createStartDraggingEvent,
   createStopDraggingEvent
 } from '../test-utils';
-import {
-  FeatureCollection,
-  Position,
-  Point,
-  LineString,
-  FeatureOf
-} from '../../../src/utils/geojson-types';
+import type {Position, Point, LineString, Feature} from 'geojson';
+import { FeatureCollectionWithSupportedGeometry } from '../../../src/utils/types';
 
-let pointFeature: FeatureOf<Point>;
-let lineStringFeature: FeatureOf<LineString>;
+let pointFeature: Feature<Point>;
+let lineStringFeature: Feature<LineString>;
 let polygonFeature;
 let polygonRectangleFeature;
 let multiPointFeature;
@@ -161,7 +156,7 @@ beforeEach(() => {
   };
 });
 
-const mockMove = (mode, picks: Pick[], props: ModeProps<FeatureCollection>) => {
+const mockMove = (mode, picks: Pick[], props: ModeProps<FeatureCollectionWithSupportedGeometry>) => {
   const moveEvent = createPointerMoveEvent([100, 100], picks);
   mode.handlePointerMove(moveEvent, props);
 
@@ -178,7 +173,7 @@ test('Rectangular polygon feature preserves shape', () => {
     data: {
       type: 'FeatureCollection',
       features: [polygonRectangleFeature]
-    } as FeatureCollection,
+    },
     selectedIndexes: [0],
     onEdit: mockOnEdit
   });
@@ -206,7 +201,7 @@ describe('getGuides()', () => {
       data: {
         type: 'FeatureCollection',
         features: [pointFeature]
-      } as FeatureCollection,
+      },
       selectedIndexes: [0]
     });
 
@@ -296,7 +291,7 @@ describe('getGuides()', () => {
       data: {
         type: 'FeatureCollection',
         features: [lineStringFeature, pointFeature, multiPointFeature]
-      } as FeatureCollection,
+      },
       selectedIndexes: [0, 2]
     });
 
@@ -305,7 +300,7 @@ describe('getGuides()', () => {
     expect(guides).toMatchSnapshot();
   });
 
-  const lineString: FeatureOf<LineString> = {
+  const lineString: Feature<LineString> = {
     type: 'Feature',
     geometry: {
       type: 'LineString',
@@ -319,15 +314,17 @@ describe('getGuides()', () => {
         [-122.42357254028322, 37.77987343901049],
         [-122.41198539733887, 37.78109451335266]
       ]
-    }
+    },
+    properties: {}
   };
 
-  const point = {
+  const point: Feature<Point> = {
     type: 'Feature',
     geometry: {
       type: 'Point',
       coordinates: [-122.40880966186523, 37.783536601521924]
-    }
+    },
+    properties: {}
   };
   const pick = {
     object: lineString,
@@ -343,7 +340,7 @@ describe('getGuides()', () => {
       data: {
         type: 'FeatureCollection',
         features: [lineString]
-      } as FeatureCollection,
+      },
       selectedIndexes: [0],
       lastPointerMoveEvent: {
         picks: [pick],
@@ -389,7 +386,7 @@ describe('getGuides()', () => {
       data: {
         type: 'FeatureCollection',
         features: [lineString]
-      } as FeatureCollection,
+      },
       selectedIndexes: [0],
       lastPointerMoveEvent: {
         picks: [
@@ -425,7 +422,7 @@ describe('getGuides()', () => {
       data: {
         type: 'FeatureCollection',
         features: [lineString]
-      } as FeatureCollection
+      }
     });
 
     const guides = mode.getGuides(props);
@@ -443,7 +440,7 @@ describe('getGuides()', () => {
       data: {
         type: 'FeatureCollection',
         features: [point]
-      } as FeatureCollection,
+      },
       selectedIndexes: [0],
       lastPointerMoveEvent: {
         picks: [

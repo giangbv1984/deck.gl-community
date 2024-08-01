@@ -15,7 +15,7 @@ import {
   updateRectanglePosition,
   NearestPointType
 } from './utils';
-import {LineString, Point, Polygon, FeatureCollection, FeatureOf} from '../utils/geojson-types';
+import type {LineString, Point, Polygon, Feature} from 'geojson';
 import {
   ModeProps,
   ClickEvent,
@@ -30,10 +30,11 @@ import {
 } from './types';
 import {GeoJsonEditMode} from './geojson-edit-mode';
 import {ImmutableFeatureCollection} from './immutable-feature-collection';
+import {FeatureCollectionWithSupportedGeometry} from '../utils/types';
 
 export class ModifyMode extends GeoJsonEditMode {
   // eslint-disable-next-line complexity
-  getGuides(props: ModeProps<FeatureCollection>): GuideFeatureCollection {
+  getGuides(props: ModeProps<FeatureCollectionWithSupportedGeometry>): GuideFeatureCollection {
     const handles: GuideFeature[] = [];
 
     const {data, lastPointerMoveEvent} = props;
@@ -75,7 +76,6 @@ export class ModifyMode extends GeoJsonEditMode {
           (lineString, prefix) => {
             const lineStringFeature = toLineString(lineString);
             const candidateIntermediatePoint = this.getNearestPoint(
-              // @ts-expect-error turf types too wide
               lineStringFeature,
               referencePoint,
               props.modeConfig && props.modeConfig.viewport
@@ -120,8 +120,8 @@ export class ModifyMode extends GeoJsonEditMode {
 
   // turf.js does not support elevation for nearestPointOnLine
   getNearestPoint(
-    line: FeatureOf<LineString>,
-    inPoint: FeatureOf<Point>,
+    line: Feature<LineString>,
+    inPoint: Feature<Point>,
     viewport: Viewport | null | undefined
   ): NearestPointType {
     const {coordinates} = line.geometry;
@@ -138,7 +138,7 @@ export class ModifyMode extends GeoJsonEditMode {
     return nearestPointOnLine(line, inPoint, viewport);
   }
 
-  handleClick(event: ClickEvent, props: ModeProps<FeatureCollection>) {
+  handleClick(event: ClickEvent, props: ModeProps<FeatureCollectionWithSupportedGeometry>) {
     const pickedExistingHandle = getPickedExistingEditHandle(event.picks);
     const pickedIntermediateHandle = getPickedIntermediateEditHandle(event.picks);
 
@@ -193,7 +193,10 @@ export class ModifyMode extends GeoJsonEditMode {
     }
   }
 
-  handleDragging(event: DraggingEvent, props: ModeProps<FeatureCollection>): void {
+  handleDragging(
+    event: DraggingEvent,
+    props: ModeProps<FeatureCollectionWithSupportedGeometry>
+  ): void {
     const editHandle = getPickedEditHandle(event.pointerDownPicks);
 
     if (editHandle) {
@@ -206,7 +209,7 @@ export class ModifyMode extends GeoJsonEditMode {
 
   _dragEditHandle(
     editType: string,
-    props: ModeProps<FeatureCollection>,
+    props: ModeProps<FeatureCollectionWithSupportedGeometry>,
     editHandle: EditHandleFeature,
     event: StopDraggingEvent | DraggingEvent
   ) {
@@ -216,7 +219,7 @@ export class ModifyMode extends GeoJsonEditMode {
     let updatedData;
     if (props.modeConfig?.lockRectangles && editedFeature.properties.shape === 'Rectangle') {
       const coordinates = updateRectanglePosition(
-        editedFeature as FeatureOf<Polygon>,
+        editedFeature as Feature<Polygon>,
         editHandleProperties.positionIndexes[1],
         event.mapCoords
       ) as any; // TODO
@@ -245,12 +248,18 @@ export class ModifyMode extends GeoJsonEditMode {
     });
   }
 
-  handlePointerMove(event: PointerMoveEvent, props: ModeProps<FeatureCollection>): void {
+  handlePointerMove(
+    event: PointerMoveEvent,
+    props: ModeProps<FeatureCollectionWithSupportedGeometry>
+  ): void {
     const cursor = this.getCursor(event);
     props.onUpdateCursor(cursor);
   }
 
-  handleStartDragging(event: StartDraggingEvent, props: ModeProps<FeatureCollection>) {
+  handleStartDragging(
+    event: StartDraggingEvent,
+    props: ModeProps<FeatureCollectionWithSupportedGeometry>
+  ) {
     const selectedFeatureIndexes = props.selectedIndexes;
 
     const editHandle = getPickedIntermediateEditHandle(event.picks);
@@ -277,7 +286,10 @@ export class ModifyMode extends GeoJsonEditMode {
     }
   }
 
-  handleStopDragging(event: StopDraggingEvent, props: ModeProps<FeatureCollection>) {
+  handleStopDragging(
+    event: StopDraggingEvent,
+    props: ModeProps<FeatureCollectionWithSupportedGeometry>
+  ) {
     const selectedFeatureIndexes = props.selectedIndexes;
     const editHandle = getPickedEditHandle(event.picks);
     if (selectedFeatureIndexes.length && editHandle) {

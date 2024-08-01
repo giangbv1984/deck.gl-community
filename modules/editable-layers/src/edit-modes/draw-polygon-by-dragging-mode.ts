@@ -4,9 +4,10 @@
 
 import throttle from 'lodash.throttle';
 import {ClickEvent, StartDraggingEvent, StopDraggingEvent, DraggingEvent, ModeProps} from './types';
-import {Polygon, FeatureCollection} from '../utils/geojson-types';
+import type {Polygon, FeatureCollection} from 'geojson';
 import {getPickedEditHandle} from './utils';
 import {DrawPolygonMode} from './draw-polygon-mode';
+import { FeatureCollectionWithSupportedGeometry } from '../utils/types';
 
 type DraggingHandler = (event: DraggingEvent, props: ModeProps<FeatureCollection>) => void;
 
@@ -28,7 +29,7 @@ export class DrawPolygonByDraggingMode extends DrawPolygonMode {
     }
   }
 
-  handleStopDragging(event: StopDraggingEvent, props: ModeProps<FeatureCollection>) {
+  handleStopDragging(event: StopDraggingEvent, props: ModeProps<FeatureCollectionWithSupportedGeometry>) {
     this.addClickSequence(event);
     const clickSequence = this.getClickSequence();
     // @ts-expect-error cancel() not typed
@@ -75,7 +76,7 @@ export class DrawPolygonByDraggingMode extends DrawPolygonMode {
     }
   }
 
-  handleKeyUp(event: KeyboardEvent, props: ModeProps<FeatureCollection>) {
+  handleKeyUp(event: KeyboardEvent, props: ModeProps<FeatureCollectionWithSupportedGeometry>) {
     if (event.key === 'Enter') {
       const clickSequence = this.getClickSequence();
       if (clickSequence.length > 2) {

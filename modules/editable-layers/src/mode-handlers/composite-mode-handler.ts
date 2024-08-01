@@ -1,4 +1,4 @@
-import {FeatureCollection, Feature, Position} from '../utils/geojson-types';
+import type {Position} from 'geojson';
 import {
   ClickEvent,
   PointerMoveEvent,
@@ -6,6 +6,7 @@ import {
   StopDraggingEvent
 } from '../edit-modes/types';
 import {ModeHandler, EditAction, EditHandle} from './mode-handler';
+import {FeatureCollectionWithSupportedGeometry, FeatureWithSupportedGeometry} from '../utils/types';
 
 // TODO edit-modes: delete handlers once EditMode fully implemented
 export class CompositeModeHandler extends ModeHandler {
@@ -35,7 +36,7 @@ export class CompositeModeHandler extends ModeHandler {
     return result;
   }
 
-  setFeatureCollection(featureCollection: FeatureCollection): void {
+  setFeatureCollection(featureCollection: FeatureCollectionWithSupportedGeometry): void {
     this.handlers.forEach((handler) => handler.setFeatureCollection(featureCollection));
   }
 
@@ -69,7 +70,7 @@ export class CompositeModeHandler extends ModeHandler {
     return this._coalesce((handler) => handler.handleStopDragging(event));
   }
 
-  getTentativeFeature(): Feature | null | undefined {
+  getTentativeFeature(): FeatureWithSupportedGeometry | null | undefined {
     return this._coalesce((handler) => handler.getTentativeFeature());
   }
 

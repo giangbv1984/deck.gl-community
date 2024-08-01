@@ -20,12 +20,17 @@ import {
   GuideFeatureCollection,
   TentativeFeature
 } from './types';
-import {FeatureCollection, Feature, Polygon, Geometry, Position} from '../utils/geojson-types';
+import type {Polygon, Position} from 'geojson';
 import {getPickedEditHandles, getNonGuidePicks} from './utils';
 import {EditMode} from './edit-mode';
 import {ImmutableFeatureCollection} from './immutable-feature-collection';
+import {
+  FeatureCollectionWithSupportedGeometry,
+  FeatureWithSupportedGeometry,
+  SupportedGeometry
+} from '../utils/types';
 
-export type GeoJsonEditAction = EditAction<FeatureCollection>;
+export type GeoJsonEditAction = EditAction<FeatureCollectionWithSupportedGeometry>;
 
 const DEFAULT_GUIDES: GuideFeatureCollection = {
   type: 'FeatureCollection',
@@ -34,31 +39,38 @@ const DEFAULT_GUIDES: GuideFeatureCollection = {
 const DEFAULT_TOOLTIPS: Tooltip[] = [];
 
 // Main interface for `EditMode`s that edit GeoJSON
-export type GeoJsonEditModeType = EditMode<FeatureCollection, FeatureCollection>;
+export type GeoJsonEditModeType = EditMode<
+  FeatureCollectionWithSupportedGeometry,
+  FeatureCollectionWithSupportedGeometry
+>;
 
 export interface GeoJsonEditModeConstructor {
   new (): GeoJsonEditModeType;
 }
 
-export class GeoJsonEditMode implements EditMode<FeatureCollection, GuideFeatureCollection> {
+export class GeoJsonEditMode
+implements EditMode<FeatureCollectionWithSupportedGeometry, GuideFeatureCollection>
+{
   _clickSequence: Position[] = [];
 
-  getGuides(props: ModeProps<FeatureCollection>): GuideFeatureCollection {
+  getGuides(props: ModeProps<FeatureCollectionWithSupportedGeometry>): GuideFeatureCollection {
     return DEFAULT_GUIDES;
   }
 
-  getTooltips(props: ModeProps<FeatureCollection>): Tooltip[] {
+  getTooltips(props: ModeProps<FeatureCollectionWithSupportedGeometry>): Tooltip[] {
     return DEFAULT_TOOLTIPS;
   }
 
-  getSelectedFeature(props: ModeProps<FeatureCollection>): Feature | null | undefined {
+  getSelectedFeature(
+    props: ModeProps<FeatureCollectionWithSupportedGeometry>
+  ): FeatureWithSupportedGeometry | null | undefined {
     if (props.selectedIndexes.length === 1) {
       return props.data.features[props.selectedIndexes[0]];
     }
     return null;
   }
 
-  getSelectedGeometry(props: ModeProps<FeatureCollection>): Geometry | null | undefined {
+  getSelectedGeometry(props: ModeProps<FeatureCollectionWithSupportedGeometry>) {
     const feature = this.getSelectedFeature(props);
     if (feature) {
       return feature.geometry;
@@ -66,7 +78,9 @@ export class GeoJsonEditMode implements EditMode<FeatureCollection, GuideFeature
     return null;
   }
 
-  getSelectedFeaturesAsFeatureCollection(props: ModeProps<FeatureCollection>): FeatureCollection {
+  getSelectedFeaturesAsFeatureCollection(
+    props: ModeProps<FeatureCollectionWithSupportedGeometry>
+  ): FeatureCollectionWithSupportedGeometry {
     const {features} = props.data;
     const selectedFeatures = props.selectedIndexes.map((selectedIndex) => features[selectedIndex]);
     return {
@@ -87,14 +101,19 @@ export class GeoJsonEditMode implements EditMode<FeatureCollection, GuideFeature
     this._clickSequence = [];
   }
 
-  getTentativeGuide(props: ModeProps<FeatureCollection>): TentativeFeature | null | undefined {
+  getTentativeGuide(
+    props: ModeProps<FeatureCollectionWithSupportedGeometry>
+  ): TentativeFeature | null | undefined {
     const guides = this.getGuides(props);
     return guides.features.find(
       (f) => f.properties && f.properties.guideType === 'tentative'
     ) as TentativeFeature;
   }
 
-  isSelectionPicked(picks: Pick[], props: ModeProps<FeatureCollection>): boolean {
+  isSelectionPicked(
+    picks: Pick[],
+    props: ModeProps<FeatureCollectionWithSupportedGeometry>
+  ): boolean {
     if (!picks.length) return false;
     const pickedFeatures = getNonGuidePicks(picks).map(({index}) => index);
     const pickedHandles = getPickedEditHandles(picks).map(
@@ -104,7 +123,7 @@ export class GeoJsonEditMode implements EditMode<FeatureCollection, GuideFeature
     return props.selectedIndexes.some((index) => pickedIndexes.has(index));
   }
 
-  rewindPolygon(feature: Feature): Feature {
+  rewindPolygon(feature: FeatureWithSupportedGeometry): FeatureWithSupportedGeometry {
     const {geometry} = feature;
 
     const isPolygonal = geometry.type === 'Polygon' || geometry.type === 'MultiPolygon';
@@ -117,8 +136,8 @@ export class GeoJsonEditMode implements EditMode<FeatureCollection, GuideFeature
   }
 
   getAddFeatureAction(
-    featureOrGeometry: Geometry | Feature,
-    features: FeatureCollection
+    featureOrGeometry: SupportedGeometry | FeatureWithSupportedGeometry,
+    features: FeatureCollectionWithSupportedGeometry
   ): GeoJsonEditAction {
     // Unsure why flow can't deal with Geometry type, but there I fixed it
     const featureOrGeometryAsAny: any = featureOrGeometry;
@@ -127,10 +146,10 @@ export class GeoJsonEditMode implements EditMode<FeatureCollection, GuideFeature
       featureOrGeometryAsAny.type === 'Feature'
         ? featureOrGeometryAsAny
         : {
-            type: 'Feature',
-            properties: {},
-            geometry: featureOrGeometryAsAny
-          };
+          type: 'Feature',
+          properties: {},
+          geometry: featureOrGeometryAsAny
+        };
 
     const rewindFeature = this.rewindPolygon(feature);
     const updatedData = new ImmutableFeatureCollection(features)
@@ -147,8 +166,8 @@ export class GeoJsonEditMode implements EditMode<FeatureCollection, GuideFeature
   }
 
   getAddManyFeaturesAction(
-    {features: featuresToAdd}: FeatureCollection,
-    features: FeatureCollection
+    {features: featuresToAdd}: FeatureCollectionWithSupportedGeometry,
+    features: FeatureCollectionWithSupportedGeometry
   ): GeoJsonEditAction {
     let updatedData = new ImmutableFeatureCollection(features);
     const initialIndex = updatedData.getObject().features.length;
@@ -174,8 +193,8 @@ export class GeoJsonEditMode implements EditMode<FeatureCollection, GuideFeature
   }
 
   getAddFeatureOrBooleanPolygonAction(
-    featureOrGeometry: Polygon | Feature,
-    props: ModeProps<FeatureCollection>
+    featureOrGeometry: Polygon | FeatureWithSupportedGeometry,
+    props: ModeProps<FeatureCollectionWithSupportedGeometry>
   ): GeoJsonEditAction | null | undefined {
     const featureOrGeometryAsAny: any = featureOrGeometry;
 
@@ -198,20 +217,26 @@ export class GeoJsonEditMode implements EditMode<FeatureCollection, GuideFeature
         featureOrGeometryAsAny.type === 'Feature'
           ? featureOrGeometryAsAny
           : {
-              type: 'Feature',
-              geometry: featureOrGeometryAsAny
-            };
+            type: 'Feature',
+            geometry: featureOrGeometryAsAny
+          };
 
       let updatedGeometry;
       if (modeConfig.booleanOperation === 'union') {
-        // @ts-expect-error selectedFeature type too wide
-        updatedGeometry = turfUnion(selectedFeature, feature);
+        updatedGeometry = turfUnion({
+          type: 'FeatureCollection',
+          features: [selectedFeature, feature]
+        });
       } else if (modeConfig.booleanOperation === 'difference') {
-        // @ts-expect-error selectedFeature type too wide
-        updatedGeometry = turfDifference(selectedFeature, feature);
+        updatedGeometry = turfDifference({
+          type: 'FeatureCollection',
+          features: [selectedFeature, feature]
+        });
       } else if (modeConfig.booleanOperation === 'intersection') {
-        // @ts-expect-error selectedFeature type too wide
-        updatedGeometry = turfIntersect(selectedFeature, feature);
+        updatedGeometry = turfIntersect({
+          type: 'FeatureCollection',
+          features: [selectedFeature, feature]
+        });
       } else {
         // eslint-disable-next-line no-console,no-undef
         console.warn(`Invalid booleanOperation ${modeConfig.booleanOperation}`);
@@ -243,12 +268,17 @@ export class GeoJsonEditMode implements EditMode<FeatureCollection, GuideFeature
     return this.getAddFeatureAction(featureOrGeometry, props.data);
   }
 
-  createTentativeFeature(props: ModeProps<FeatureCollection>): TentativeFeature | null {
+  createTentativeFeature(
+    props: ModeProps<FeatureCollectionWithSupportedGeometry>
+  ): TentativeFeature | null {
     return null;
   }
 
-  handleClick(event: ClickEvent, props: ModeProps<FeatureCollection>): void {}
-  handlePointerMove(event: PointerMoveEvent, props: ModeProps<FeatureCollection>): void {
+  handleClick(event: ClickEvent, props: ModeProps<FeatureCollectionWithSupportedGeometry>): void {}
+  handlePointerMove(
+    event: PointerMoveEvent,
+    props: ModeProps<FeatureCollectionWithSupportedGeometry>
+  ): void {
     const tentativeFeature = this.createTentativeFeature(props);
     if (tentativeFeature) {
       props.onEdit({
@@ -260,11 +290,23 @@ export class GeoJsonEditMode implements EditMode<FeatureCollection, GuideFeature
       });
     }
   }
-  handleStartDragging(event: StartDraggingEvent, props: ModeProps<FeatureCollection>): void {}
-  handleStopDragging(event: StopDraggingEvent, props: ModeProps<FeatureCollection>): void {}
-  handleDragging(event: DraggingEvent, props: ModeProps<FeatureCollection>): void {}
+  handleStartDragging(
+    event: StartDraggingEvent,
+    props: ModeProps<FeatureCollectionWithSupportedGeometry>
+  ): void {}
+  handleStopDragging(
+    event: StopDraggingEvent,
+    props: ModeProps<FeatureCollectionWithSupportedGeometry>
+  ): void {}
+  handleDragging(
+    event: DraggingEvent,
+    props: ModeProps<FeatureCollectionWithSupportedGeometry>
+  ): void {}
 
-  handleKeyUp(event: KeyboardEvent, props: ModeProps<FeatureCollection>): void {
+  handleKeyUp(
+    event: KeyboardEvent,
+    props: ModeProps<FeatureCollectionWithSupportedGeometry>
+  ): void {
     if (event.key === 'Escape') {
       this.resetClickSequence();
       props.onEdit({

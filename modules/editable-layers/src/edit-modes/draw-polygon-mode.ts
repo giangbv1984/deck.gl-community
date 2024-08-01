@@ -12,12 +12,15 @@ import {
   TentativeFeature,
   GuideFeature
 } from './types';
-import {Polygon, FeatureCollection} from '../utils/geojson-types';
+import type {Polygon} from 'geojson';
 import {getPickedEditHandle} from './utils';
 import {GeoJsonEditMode} from './geojson-edit-mode';
+import type {FeatureCollectionWithSupportedGeometry} from '../utils/types';
 
 export class DrawPolygonMode extends GeoJsonEditMode {
-  createTentativeFeature(props: ModeProps<FeatureCollection>): TentativeFeature {
+  createTentativeFeature(
+    props: ModeProps<FeatureCollectionWithSupportedGeometry>
+  ): TentativeFeature {
     const {lastPointerMoveEvent} = props;
     const clickSequence = this.getClickSequence();
 
@@ -51,7 +54,7 @@ export class DrawPolygonMode extends GeoJsonEditMode {
     return tentativeFeature;
   }
 
-  getGuides(props: ModeProps<FeatureCollection>): GuideFeatureCollection {
+  getGuides(props: ModeProps<FeatureCollectionWithSupportedGeometry>): GuideFeatureCollection {
     const clickSequence = this.getClickSequence();
 
     const guides: GuideFeatureCollection = {
@@ -84,7 +87,7 @@ export class DrawPolygonMode extends GeoJsonEditMode {
   }
 
   // eslint-disable-next-line complexity
-  handleClick(event: ClickEvent, props: ModeProps<FeatureCollection>) {
+  handleClick(event: ClickEvent, props: ModeProps<FeatureCollectionWithSupportedGeometry>) {
     const {picks} = event;
     const clickedEditHandle = getPickedEditHandle(picks);
     const clickSequence = this.getClickSequence();
@@ -143,7 +146,7 @@ export class DrawPolygonMode extends GeoJsonEditMode {
     }
   }
 
-  handleKeyUp(event: KeyboardEvent, props: ModeProps<FeatureCollection>) {
+  handleKeyUp(event: KeyboardEvent, props: ModeProps<FeatureCollectionWithSupportedGeometry>) {
     if (event.key === 'Enter') {
       const clickSequence = this.getClickSequence();
       if (clickSequence.length > 2) {
@@ -169,7 +172,10 @@ export class DrawPolygonMode extends GeoJsonEditMode {
     }
   }
 
-  handlePointerMove(event: PointerMoveEvent, props: ModeProps<FeatureCollection>) {
+  handlePointerMove(
+    event: PointerMoveEvent,
+    props: ModeProps<FeatureCollectionWithSupportedGeometry>
+  ) {
     props.onUpdateCursor('cell');
     super.handlePointerMove(event, props);
   }

@@ -6,13 +6,14 @@ import turfBearing from '@turf/bearing';
 import turfDistance from '@turf/distance';
 import turfTransformTranslate from '@turf/transform-translate';
 import {point} from '@turf/helpers';
-import {FeatureCollection, Position} from '../utils/geojson-types';
+import type {Position} from 'geojson';
 import {PointerMoveEvent, StartDraggingEvent, StopDraggingEvent} from '../edit-modes/types';
 import {EditAction, ModeHandler} from './mode-handler';
+import {FeatureCollectionWithSupportedGeometry} from '../utils/types';
 
 // TODO edit-modes: delete handlers once EditMode fully implemented
 export class TranslateHandler extends ModeHandler {
-  _geometryBeforeTranslate: FeatureCollection | null | undefined;
+  _geometryBeforeTranslate: FeatureCollectionWithSupportedGeometry | null | undefined;
   _isTranslatable: boolean = undefined!;
 
   handlePointerMove(event: PointerMoveEvent): {
@@ -87,9 +88,7 @@ export class TranslateHandler extends ModeHandler {
     const distanceMoved = turfDistance(p1, p2);
     const direction = turfBearing(p1, p2);
 
-    // @ts-expect-error turf type diff
-    const movedFeatures: FeatureCollection = turfTransformTranslate(
-      // @ts-expect-error turf type diff
+    const movedFeatures = turfTransformTranslate<FeatureCollectionWithSupportedGeometry>(
       this._geometryBeforeTranslate,
       distanceMoved,
       direction

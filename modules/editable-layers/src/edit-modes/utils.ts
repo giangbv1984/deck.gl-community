@@ -6,22 +6,22 @@ import destination from '@turf/destination';
 import bearing from '@turf/bearing';
 import pointToLineDistance from '@turf/point-to-line-distance';
 import {flattenEach} from '@turf/meta';
-import {point, MultiLineString} from '@turf/helpers';
+import {point} from '@turf/helpers';
 import {getCoords} from '@turf/invariant';
 import WebMercatorViewport from 'viewport-mercator-project';
 import {Viewport, Pick, EditHandleFeature, EditHandleType} from './types';
-import {
+import type {
   Geometry,
   Position,
   Point,
   LineString,
   Polygon,
-  FeatureOf,
-  FeatureWithProps,
-  AnyCoordinates
-} from '../utils/geojson-types';
+  Feature,
+  MultiLineString
+} from 'geojson';
+import {AnyCoordinates} from '../utils/types';
 
-export type NearestPointType = FeatureWithProps<Point, {dist: number; index: number}>;
+export type NearestPointType = Feature<Point, {dist: number; index: number}>;
 
 export function toDeckColor(
   color?: [number, number, number, number] | number,
@@ -116,8 +116,8 @@ export function mix(a: number, b: number, ratio: number): number {
 }
 
 export function nearestPointOnProjectedLine(
-  line: FeatureOf<LineString>,
-  inPoint: FeatureOf<Point>,
+  line: Feature<LineString>,
+  inPoint: Feature<Point>,
   viewport: Viewport
 ): NearestPointType {
   const wmViewport = new WebMercatorViewport(viewport);
@@ -173,7 +173,6 @@ export function nearestPointOnProjectedLine(
     type: 'Feature',
     geometry: {
       type: 'Point',
-      // @ts-expect-error
       coordinates: wmViewport.unproject([x0, y0, z0])
     },
     properties: {
@@ -185,8 +184,8 @@ export function nearestPointOnProjectedLine(
 }
 
 export function nearestPointOnLine<G extends LineString | MultiLineString>(
-  lines: FeatureOf<LineString>,
-  inPoint: FeatureOf<Point>,
+  lines: Feature<G>,
+  inPoint: Feature<Point>,
   viewport?: Viewport
 ): NearestPointType {
   let mercator;
@@ -202,12 +201,9 @@ export function nearestPointOnLine<G extends LineString | MultiLineString>(
     return closestPoint;
   }
 
-  // @ts-expect-error TODO
-  // eslint-disable-next-line max-statements, complexity
   flattenEach(lines, (line: any) => {
-    const coords: any = getCoords(line);
-    // @ts-expect-error TODO
-    const pointCoords: any = getCoords(inPoint);
+    const coords = getCoords(line);
+    const pointCoords = getCoords(inPoint);
 
     let minDist;
     let to;
@@ -472,7 +468,7 @@ function getEditHandlesForCoordinates(
  * @returns Updated coordinates.
  */
 export function updateRectanglePosition(
-  feature: FeatureOf<Polygon>,
+  feature: Feature<Polygon>,
   editHandleIndex: number,
   mapCoords: Position
 ): Position[][] | null {

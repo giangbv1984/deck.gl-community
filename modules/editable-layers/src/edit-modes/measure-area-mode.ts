@@ -5,13 +5,13 @@
 import turfArea from '@turf/area';
 import turfCentroid from '@turf/centroid';
 import {ClickEvent, Tooltip, ModeProps} from './types';
-import {FeatureCollection} from '../utils/geojson-types';
 import {DrawPolygonMode} from './draw-polygon-mode';
+import {FeatureCollectionWithSupportedGeometry} from '../utils/types';
 
 const DEFAULT_TOOLTIPS = [];
 
 export class MeasureAreaMode extends DrawPolygonMode {
-  handleClick(event: ClickEvent, props: ModeProps<FeatureCollection>) {
+  handleClick(event: ClickEvent, props: ModeProps<FeatureCollectionWithSupportedGeometry>) {
     const propsWithoutEdit = {
       ...props,
       onEdit: () => {}
@@ -20,7 +20,10 @@ export class MeasureAreaMode extends DrawPolygonMode {
     super.handleClick(event, propsWithoutEdit);
   }
 
-  handleKeyUp(event: KeyboardEvent, props: ModeProps<FeatureCollection>): void {
+  handleKeyUp(
+    event: KeyboardEvent,
+    props: ModeProps<FeatureCollectionWithSupportedGeometry>
+  ): void {
     const propsWithoutEdit = {
       ...props,
       onEdit: () => {}
@@ -29,7 +32,7 @@ export class MeasureAreaMode extends DrawPolygonMode {
     super.handleKeyUp(event, propsWithoutEdit);
   }
 
-  getTooltips(props: ModeProps<FeatureCollection>): Tooltip[] {
+  getTooltips(props: ModeProps<FeatureCollectionWithSupportedGeometry>): Tooltip[] {
     const tentativeGuide = this.getTentativeGuide(props);
 
     if (tentativeGuide && tentativeGuide.geometry.type === 'Polygon') {
@@ -55,7 +58,6 @@ export class MeasureAreaMode extends DrawPolygonMode {
 
       return [
         {
-          // @ts-expect-error turf types diff
           position: centroid.geometry.coordinates,
           text
         }

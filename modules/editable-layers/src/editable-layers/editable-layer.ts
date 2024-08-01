@@ -12,7 +12,7 @@ import {
   StopDraggingEvent,
   PointerMoveEvent
 } from '../edit-modes/types';
-import {Position} from '../utils/geojson-types';
+import type {Position} from 'geojson';
 
 const EVENT_TYPES = ['anyclick', 'pointermove', 'panstart', 'panmove', 'panend', 'keyup'];
 

@@ -3,22 +3,11 @@
 // Copyright (c) vis.gl contributors
 
 import {test, expect} from 'vitest';
-import type {Feature as TurfFeature, Geometry} from '@turf/helpers';
-// I used types from geojson because they're generic and helps me with intellisense
-import type {
-  Feature as GenericFeature,
-  Point,
-  MultiPoint,
-  LineString,
-  Polygon,
-  MultiPolygon
-} from 'geojson';
+import type {Feature, Point, MultiPoint, LineString, Polygon, MultiPolygon} from 'geojson';
 import {translateFromCenter} from '../../src/utils/translate-from-center';
 
-type Feature = TurfFeature<Geometry>;
-
 test('Point coordinates in right format', () => {
-  const feature: GenericFeature<Point> = {
+  const feature: Feature<Point> = {
     type: 'Feature',
     geometry: {
       type: 'Point',
@@ -26,12 +15,12 @@ test('Point coordinates in right format', () => {
     },
     properties: {}
   };
-  const result = translateFromCenter(feature as Feature, 100, 100) as GenericFeature<Point>;
+  const result = translateFromCenter(feature, 100, 100);
   expect(result.geometry.coordinates).toHaveLength(2);
 });
 
 test('MultiPoint coordinates in right format', () => {
-  const feature: GenericFeature<MultiPoint> = {
+  const feature: Feature<MultiPoint> = {
     type: 'Feature',
     geometry: {
       type: 'MultiPoint',
@@ -43,14 +32,14 @@ test('MultiPoint coordinates in right format', () => {
     },
     properties: {}
   };
-  const result = translateFromCenter(feature as Feature, 100, 100) as GenericFeature<MultiPoint>;
+  const result = translateFromCenter(feature, 100, 100);
   expect(result.geometry.coordinates[0]).toHaveLength(2);
   expect(result.geometry.coordinates[1]).toHaveLength(2);
   expect(result.geometry.coordinates[2]).toHaveLength(2);
 });
 
 test('LineString coordinates in right format', () => {
-  const feature: GenericFeature<LineString> = {
+  const feature: Feature<LineString> = {
     type: 'Feature',
     geometry: {
       type: 'LineString',
@@ -61,13 +50,13 @@ test('LineString coordinates in right format', () => {
     },
     properties: {}
   };
-  const result = translateFromCenter(feature as Feature, 100, 100) as GenericFeature<LineString>;
+  const result = translateFromCenter(feature, 100, 100);
   expect(result.geometry.coordinates[0]).toHaveLength(2);
   expect(result.geometry.coordinates[1]).toHaveLength(2);
 });
 
 test('Polygon coordinates in right format', () => {
-  const feature: GenericFeature<Polygon> = {
+  const feature: Feature<Polygon> = {
     type: 'Feature',
     geometry: {
       type: 'Polygon',
@@ -81,7 +70,7 @@ test('Polygon coordinates in right format', () => {
     },
     properties: {}
   };
-  const result = translateFromCenter(feature as Feature, 100, 100) as GenericFeature<Polygon>;
+  const result = translateFromCenter(feature, 100, 100);
   expect(result.geometry.coordinates[0][0]).toHaveLength(2);
   expect(result.geometry.coordinates[0][1]).toHaveLength(2);
   expect(result.geometry.coordinates[0][2]).toHaveLength(2);
@@ -91,7 +80,7 @@ test('Polygon coordinates in right format', () => {
 });
 
 test('Polygon coordinates in right format', () => {
-  const feature: GenericFeature<MultiPolygon> = {
+  const feature: Feature<MultiPolygon> = {
     type: 'Feature',
     geometry: {
       type: 'MultiPolygon',
@@ -112,7 +101,7 @@ test('Polygon coordinates in right format', () => {
     },
     properties: {}
   };
-  const result = translateFromCenter(feature as Feature, 100, 100) as GenericFeature<MultiPolygon>;
+  const result = translateFromCenter(feature, 100, 100);
   expect(result.geometry.coordinates[0][0][0]).toHaveLength(2);
   expect(result.geometry.coordinates[0][0][1]).toHaveLength(2);
   expect(result.geometry.coordinates[0][0][2]).toHaveLength(2);

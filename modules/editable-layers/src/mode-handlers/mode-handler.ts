@@ -8,7 +8,7 @@ import turfUnion from '@turf/union';
 import turfDifference from '@turf/difference';
 import turfIntersect from '@turf/intersect';
 
-import {FeatureCollection, Feature, Polygon, Geometry, Position} from '../utils/geojson-types';
+import type {FeatureCollection, Polygon, Position, Geometry} from 'geojson';
 
 import {
   ClickEvent,
@@ -18,6 +18,8 @@ import {
   StopDraggingEvent
 } from '../edit-modes/types';
 import {ImmutableFeatureCollection} from '../edit-modes/immutable-feature-collection';
+import turfHelpers from '@turf/helpers';
+import { FeatureCollectionWithSupportedGeometry, FeatureWithSupportedGeometry, SupportedGeometry } from '../utils/types';
 
 export type EditHandleType = 'existing' | 'intermediate' | 'snap';
 
@@ -29,7 +31,7 @@ export type EditHandle = {
 };
 
 export type EditAction = {
-  updatedData: FeatureCollection;
+  updatedData: FeatureCollectionWithSupportedGeometry;
   editType: string;
   featureIndexes: number[];
   editContext: any;
@@ -38,12 +40,12 @@ export type EditAction = {
 export class ModeHandler {
   // TODO: add underscore
   featureCollection: ImmutableFeatureCollection = undefined!;
-  _tentativeFeature: Feature | null | undefined;
+  _tentativeFeature: FeatureWithSupportedGeometry | null | undefined;
   _modeConfig: any = null;
   _selectedFeatureIndexes: number[] = [];
   _clickSequence: Position[] = [];
 
-  constructor(featureCollection?: FeatureCollection) {
+  constructor(featureCollection?: FeatureCollectionWithSupportedGeometry) {
     if (featureCollection) {
       this.setFeatureCollection(featureCollection);
     }
@@ -57,14 +59,14 @@ export class ModeHandler {
     return this.featureCollection;
   }
 
-  getSelectedFeature(): Feature | null | undefined {
+  getSelectedFeature(): FeatureWithSupportedGeometry | null | undefined {
     if (this._selectedFeatureIndexes.length === 1) {
       return this.featureCollection.getObject().features[this._selectedFeatureIndexes[0]];
     }
     return null;
   }
 
-  getSelectedGeometry(): Geometry | null | undefined {
+  getSelectedGeometry(): SupportedGeometry | null | undefined {
     const feature = this.getSelectedFeature();
     if (feature) {
       return feature.geometry;
@@ -72,7 +74,7 @@ export class ModeHandler {
     return null;
   }
 
-  getSelectedFeaturesAsFeatureCollection(): FeatureCollection {
+  getSelectedFeaturesAsFeatureCollection(): FeatureCollectionWithSupportedGeometry {
     const {features} = this.featureCollection.getObject();
     const selectedFeatures = this.getSelectedFeatureIndexes().map(
       (selectedIndex) => features[selectedIndex]
@@ -83,7 +85,7 @@ export class ModeHandler {
     };
   }
 
-  setFeatureCollection(featureCollection: FeatureCollection): void {
+  setFeatureCollection(featureCollection: FeatureCollectionWithSupportedGeometry): void {
     this.featureCollection = new ImmutableFeatureCollection(featureCollection);
   }
 
@@ -121,12 +123,12 @@ export class ModeHandler {
     this._clickSequence = [];
   }
 
-  getTentativeFeature(): Feature | null | undefined {
+  getTentativeFeature(): FeatureWithSupportedGeometry | null | undefined {
     return this._tentativeFeature;
   }
 
   // TODO: remove the underscore
-  _setTentativeFeature(tentativeFeature: Feature | null | undefined): void {
+  _setTentativeFeature(tentativeFeature: FeatureWithSupportedGeometry | null | undefined): void {
     this._tentativeFeature = tentativeFeature;
     if (!tentativeFeature) {
       // Reset the click sequence
@@ -154,7 +156,7 @@ export class ModeHandler {
     return selectedFeatureIndexes.some((index) => pickedIndexes.includes(index));
   }
 
-  getAddFeatureAction(geometry: Geometry): EditAction {
+  getAddFeatureAction(geometry: SupportedGeometry): EditAction {
     // Unsure why flow can't deal with Geometry type, but there I fixed it
     const geometryAsAny: any = geometry;
 
@@ -229,7 +231,7 @@ export class ModeHandler {
         updatedGeometry = turfUnion(selectedFeature, feature);
       } else if (modeConfig.booleanOperation === 'difference') {
         // @ts-expect-error turf type diff
-        updatedGeometry = turfDifference(selectedFeature, feature);
+        updatedGeometry = turfDifference(turfHelpers.featureCollection([selectedFeature, feature]));
       } else if (modeConfig.booleanOperation === 'intersection') {
         // @ts-expect-error turf type diff
         updatedGeometry = turfIntersect(selectedFeature, feature);
@@ -365,7 +367,6 @@ export function getEditHandlesForGeometry(
 
       break;
     default:
-      // @ts-expect-error unexpected case
       throw Error(`Unhandled geometry type: ${geometry.type}`);
   }
 

@@ -8,17 +8,17 @@ import {
   getPickedEditHandle,
   getPickedIntermediateEditHandle
 } from './utils';
-import {FeatureCollection} from '../utils/geojson-types';
 import {ModeProps, StartDraggingEvent, StopDraggingEvent, DraggingEvent} from './types';
 import {ModifyMode} from './modify-mode';
 import {ImmutableFeatureCollection} from './immutable-feature-collection';
+import { FeatureCollectionWithSupportedGeometry } from '../utils/types';
 
 export class ExtrudeMode extends ModifyMode {
   // this mode is busted =(
 
   isPointAdded = false;
 
-  handleDragging(event: DraggingEvent, props: ModeProps<FeatureCollection>): void {
+  handleDragging(event: DraggingEvent, props: ModeProps<FeatureCollectionWithSupportedGeometry>): void {
     const editHandle = getPickedEditHandle(event.pointerDownPicks);
 
     if (editHandle) {
@@ -60,7 +60,7 @@ export class ExtrudeMode extends ModifyMode {
     }
   }
 
-  handleStartDragging(event: StartDraggingEvent, props: ModeProps<FeatureCollection>) {
+  handleStartDragging(event: StartDraggingEvent, props: ModeProps<FeatureCollectionWithSupportedGeometry>) {
     const selectedFeatureIndexes = props.selectedIndexes;
 
     const editHandle = getPickedIntermediateEditHandle(event.picks);
@@ -106,7 +106,7 @@ export class ExtrudeMode extends ModifyMode {
     }
   }
 
-  handleStopDragging(event: StopDraggingEvent, props: ModeProps<FeatureCollection>) {
+  handleStopDragging(event: StopDraggingEvent, props: ModeProps<FeatureCollectionWithSupportedGeometry>) {
     const selectedFeatureIndexes = props.selectedIndexes;
     const editHandle = getPickedEditHandle(event.pointerDownPicks);
     if (selectedFeatureIndexes.length && editHandle) {
@@ -151,11 +151,12 @@ export class ExtrudeMode extends ModifyMode {
   coordinatesSize(
     positionIndexes: number[] | null | undefined,
     featureIndex: number,
-    {features}: FeatureCollection
+    {features}: FeatureCollectionWithSupportedGeometry
   ) {
     let size = 0;
     if (Array.isArray(positionIndexes)) {
       const feature = features[featureIndex];
+
       const coordinates: any = feature.geometry.coordinates;
       // for Multi polygons, length will be 3
       if (positionIndexes.length === 3) {
@@ -185,7 +186,7 @@ export class ExtrudeMode extends ModifyMode {
     positionIndexes: number[] | null | undefined,
     featureIndex: number,
     size: number,
-    features: FeatureCollection
+    features: FeatureCollectionWithSupportedGeometry
   ) {
     if (!Array.isArray(positionIndexes)) {
       return false;
@@ -234,11 +235,12 @@ export class ExtrudeMode extends ModifyMode {
   getPointForPositionIndexes(
     positionIndexes: number[] | null | undefined,
     featureIndex: number,
-    {features}: FeatureCollection
+    {features}: FeatureCollectionWithSupportedGeometry
   ) {
     let p1;
     if (Array.isArray(positionIndexes)) {
       const feature = features[featureIndex];
+  
       const coordinates: any = feature.geometry.coordinates;
       // for Multi polygons, length will be 3
       if (positionIndexes.length === 3) {

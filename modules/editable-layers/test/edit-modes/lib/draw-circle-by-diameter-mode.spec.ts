@@ -10,7 +10,7 @@ import {
   createClickEvent,
   createPointerMoveEvent
 } from '../test-utils';
-import {FeatureCollection} from '../../../src/utils/geojson-types';
+import {FeatureCollection} from 'geojson';
 
 let featureCollection: FeatureCollection;
 

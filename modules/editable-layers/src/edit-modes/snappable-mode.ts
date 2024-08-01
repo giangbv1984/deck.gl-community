@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: MIT
 // Copyright (c) vis.gl contributors
 
-import {Position, Feature, FeatureCollection} from '../utils/geojson-types';
+import type {Position, Feature, FeatureCollection} from 'geojson';
 import {
   PointerMoveEvent,
   StartDraggingEvent,
@@ -19,6 +19,7 @@ import {
   getEditHandlesForGeometry
 } from './utils';
 import {GeoJsonEditMode} from './geojson-edit-mode';
+import {FeatureCollectionWithSupportedGeometry} from '../utils/types';
 
 type MovementTypeEvent = PointerMoveEvent | StartDraggingEvent | StopDraggingEvent | DraggingEvent;
 
@@ -55,7 +56,7 @@ export class SnappableMode extends GeoJsonEditMode {
 
   _getUpdatedSnapSourceHandle(
     snapSourceHandle: EditHandleFeature,
-    data: FeatureCollection
+    data: FeatureCollectionWithSupportedGeometry
   ): EditHandleFeature {
     const {featureIndex, positionIndexes} = snapSourceHandle.properties;
     if (!Array.isArray(positionIndexes)) {
@@ -109,7 +110,7 @@ export class SnappableMode extends GeoJsonEditMode {
   // If no snap handle has been picked, only display the edit handles of the
   // selected feature. If a snap handle has been picked, display said snap handle
   // along with all snappable points on all non-selected features.
-  getGuides(props: ModeProps<FeatureCollection>): GuideFeatureCollection {
+  getGuides(props: ModeProps<FeatureCollectionWithSupportedGeometry>): GuideFeatureCollection {
     const {modeConfig, lastPointerMoveEvent} = props;
     const {enableSnapping} = modeConfig || {};
 
@@ -150,7 +151,7 @@ export class SnappableMode extends GeoJsonEditMode {
 
   _getSnapAwareEvent<T extends MovementTypeEvent>(
     event: T,
-    props: ModeProps<FeatureCollection>
+    props: ModeProps<FeatureCollectionWithSupportedGeometry>
   ): T {
     const snapSource = this._getPickedSnapSource(props.lastPointerMoveEvent.pointerDownPicks);
     const snapTarget = this._getPickedSnapTarget(event.picks);
@@ -160,19 +161,28 @@ export class SnappableMode extends GeoJsonEditMode {
       : event;
   }
 
-  handleStartDragging(event: StartDraggingEvent, props: ModeProps<FeatureCollection>) {
+  handleStartDragging(
+    event: StartDraggingEvent,
+    props: ModeProps<FeatureCollectionWithSupportedGeometry>
+  ) {
     this._handler.handleStartDragging(event, props);
   }
 
-  handleStopDragging(event: StopDraggingEvent, props: ModeProps<FeatureCollection>) {
+  handleStopDragging(
+    event: StopDraggingEvent,
+    props: ModeProps<FeatureCollectionWithSupportedGeometry>
+  ) {
     this._handler.handleStopDragging(this._getSnapAwareEvent(event, props), props);
   }
 
-  handleDragging(event: DraggingEvent, props: ModeProps<FeatureCollection>) {
+  handleDragging(event: DraggingEvent, props: ModeProps<FeatureCollectionWithSupportedGeometry>) {
     this._handler.handleDragging(this._getSnapAwareEvent(event, props), props);
   }
 
-  handlePointerMove(event: PointerMoveEvent, props: ModeProps<FeatureCollection>) {
+  handlePointerMove(
+    event: PointerMoveEvent,
+    props: ModeProps<FeatureCollectionWithSupportedGeometry>
+  ) {
     this._handler.handlePointerMove(this._getSnapAwareEvent(event, props), props);
   }
 }

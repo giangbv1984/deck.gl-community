@@ -4,7 +4,7 @@
 
 import distance from '@turf/distance';
 import {memoize} from '../utils/memoize';
-import {LineString, FeatureCollection, Position} from '../utils/geojson-types';
+import type {LineString, Position} from 'geojson';
 import {
   ClickEvent,
   PointerMoveEvent,
@@ -15,13 +15,14 @@ import {
 } from './types';
 import {getPickedEditHandle} from './utils';
 import {GeoJsonEditMode} from './geojson-edit-mode';
+import {FeatureCollectionWithSupportedGeometry} from '../utils/types';
 
 export class DrawLineStringMode extends GeoJsonEditMode {
   // declaration of variables for the calculation of the distance of linestring
   dist = 0;
   position: Position = null!;
   elems: Position[] = [];
-  handleClick(event: ClickEvent, props: ModeProps<FeatureCollection>) {
+  handleClick(event: ClickEvent, props: ModeProps<FeatureCollectionWithSupportedGeometry>) {
     const {picks} = event;
     const clickedEditHandle = getPickedEditHandle(picks);
 
@@ -71,7 +72,7 @@ export class DrawLineStringMode extends GeoJsonEditMode {
     }
   }
 
-  handleKeyUp(event: KeyboardEvent, props: ModeProps<FeatureCollection>) {
+  handleKeyUp(event: KeyboardEvent, props: ModeProps<FeatureCollectionWithSupportedGeometry>) {
     const {key} = event;
     if (key === 'Enter') {
       const clickSequence = this.getClickSequence();
@@ -97,7 +98,7 @@ export class DrawLineStringMode extends GeoJsonEditMode {
     }
   }
 
-  getGuides(props: ModeProps<FeatureCollection>): GuideFeatureCollection {
+  getGuides(props: ModeProps<FeatureCollectionWithSupportedGeometry>): GuideFeatureCollection {
     const {lastPointerMoveEvent} = props;
     const clickSequence = this.getClickSequence();
 
@@ -144,7 +145,10 @@ export class DrawLineStringMode extends GeoJsonEditMode {
     return guides;
   }
 
-  handlePointerMove(event: PointerMoveEvent, props: ModeProps<FeatureCollection>) {
+  handlePointerMove(
+    event: PointerMoveEvent,
+    props: ModeProps<FeatureCollectionWithSupportedGeometry>
+  ) {
     props.onUpdateCursor('cell');
   }
 
@@ -153,7 +157,7 @@ export class DrawLineStringMode extends GeoJsonEditMode {
    * nebula geometry mode type
    * @param props properties of geometry nebula mode
    */
-  getTooltips(props: ModeProps<FeatureCollection>): Tooltip[] {
+  getTooltips(props: ModeProps<FeatureCollectionWithSupportedGeometry>): Tooltip[] {
     return this._getTooltips({
       modeConfig: props.modeConfig,
       dist: this.dist

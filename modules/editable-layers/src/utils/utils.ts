@@ -7,12 +7,12 @@ import bearing from '@turf/bearing';
 import pointToLineDistance from '@turf/point-to-line-distance';
 import {point} from '@turf/helpers';
 import WebMercatorViewport from 'viewport-mercator-project';
-import {FeatureOf, FeatureWithProps, LineString, Point, Position} from './geojson-types';
+import type {Feature, LineString, Point, Position} from 'geojson';
 import {Viewport} from './types';
 
 // TODO edit-modes: delete and use edit-modes/utils instead
 
-export type NearestPointType = FeatureWithProps<Point, {dist: number; index: number}>;
+export type NearestPointType = Feature<Point, {dist: number; index: number}>;
 
 export function toDeckColor(
   color?: [number, number, number, number] | number,
@@ -106,8 +106,8 @@ export function mix(a: number, b: number, ratio: number): number {
 }
 
 export function nearestPointOnProjectedLine(
-  line: FeatureOf<LineString>,
-  inPoint: FeatureOf<Point>,
+  line: Feature<LineString>,
+  inPoint: Feature<Point>,
   viewport: Viewport
 ): NearestPointType {
   const wmViewport = new WebMercatorViewport(viewport);
@@ -162,7 +162,6 @@ export function nearestPointOnProjectedLine(
     type: 'Feature',
     geometry: {
       type: 'Point',
-      // @ts-expect-error Position type diff
       coordinates: wmViewport.unproject([x0, y0, z0])
     },
     properties: {

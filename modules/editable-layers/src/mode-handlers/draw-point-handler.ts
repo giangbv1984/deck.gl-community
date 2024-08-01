@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: MIT
 // Copyright (c) vis.gl contributors
 
-import {Geometry} from '../utils/geojson-types';
+import type {Geometry} from 'geojson';
 import {ClickEvent} from '../edit-modes/types';
 import {EditAction, ModeHandler} from './mode-handler';
 

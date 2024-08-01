@@ -14,8 +14,8 @@ import {
   getPickedEditHandle,
   NearestPointType
 } from './utils';
-import {LineString, Point, FeatureCollection, FeatureOf} from '../utils/geojson-types';
-import {Viewport} from '../utils/types';
+import type {LineString, Point, FeatureCollection, Feature} from 'geojson';
+import {FeatureCollectionWithSupportedGeometry, Viewport} from '../utils/types';
 import {
   ModeProps,
   PointerMoveEvent,
@@ -69,7 +69,6 @@ export class ResizeCircleMode extends GeoJsonEditMode {
           (lineString, prefix) => {
             const lineStringFeature = toLineString(lineString);
             const candidateIntermediatePoint = this.getNearestPoint(
-              // @ts-expect-error turf types too wide
               lineStringFeature,
               referencePoint,
               props.modeConfig && props.modeConfig.viewport
@@ -114,8 +113,8 @@ export class ResizeCircleMode extends GeoJsonEditMode {
 
   // turf.js does not support elevation for nearestPointOnLine
   getNearestPoint(
-    line: FeatureOf<LineString>,
-    inPoint: FeatureOf<Point>,
+    line: Feature<LineString>,
+    inPoint: Feature<Point>,
     viewport: Viewport | null | undefined
   ): NearestPointType {
     const {coordinates} = line.geometry;
@@ -129,11 +128,10 @@ export class ResizeCircleMode extends GeoJsonEditMode {
         'Editing 3D point but modeConfig.viewport not provided. Falling back to 2D logic.'
       );
     }
-    // @ts-expect-error turf types diff
     return nearestPointOnLine(line, inPoint);
   }
 
-  handleDragging(event: DraggingEvent, props: ModeProps<FeatureCollection>): void {
+  handleDragging(event: DraggingEvent, props: ModeProps<FeatureCollectionWithSupportedGeometry>): void {
     const editHandle = getPickedEditHandle(event.pointerDownPicks);
 
     if (editHandle) {
@@ -143,7 +141,6 @@ export class ResizeCircleMode extends GeoJsonEditMode {
       const editHandleProperties = editHandle.properties;
 
       const feature = this.getSelectedFeature(props);
-      // @ts-expect-error turf types diff
       const center = turfCenter(feature).geometry.coordinates;
       const numberOfSteps = Object.entries(feature.geometry.coordinates[0]).length - 1;
       const radius = Math.max(distance(center, event.mapCoords), 0.001);
@@ -154,7 +151,6 @@ export class ResizeCircleMode extends GeoJsonEditMode {
       const geometry = updatedFeature.geometry;
 
       const updatedData = new ImmutableFeatureCollection(props.data)
-        // @ts-expect-error turf types diff
         .replaceGeometry(editHandleProperties.featureIndex, geometry)
         .getObject();
 
