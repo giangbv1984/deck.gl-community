@@ -5,9 +5,8 @@
 import turfArea from '@turf/area';
 import turfCentroid from '@turf/centroid';
 import {ClickEvent, Tooltip, ModeProps} from './types';
-import {FeatureCollection} from 'geojson';
 import {DrawPolygonMode} from './draw-polygon-mode';
-import { FeatureCollectionWithSupportedGeometry } from '../utils/types';
+import {FeatureCollectionWithSupportedGeometry} from '../utils/types';
 
 const DEFAULT_TOOLTIPS = [];
 
@@ -21,7 +20,10 @@ export class MeasureAreaMode extends DrawPolygonMode {
     super.handleClick(event, propsWithoutEdit);
   }
 
-  handleKeyUp(event: KeyboardEvent, props: ModeProps<FeatureCollectionWithSupportedGeometry>): void {
+  handleKeyUp(
+    event: KeyboardEvent,
+    props: ModeProps<FeatureCollectionWithSupportedGeometry>
+  ): void {
     const propsWithoutEdit = {
       ...props,
       onEdit: () => {}

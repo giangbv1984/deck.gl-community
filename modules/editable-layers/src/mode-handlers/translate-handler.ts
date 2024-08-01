@@ -6,10 +6,10 @@ import turfBearing from '@turf/bearing';
 import turfDistance from '@turf/distance';
 import turfTransformTranslate from '@turf/transform-translate';
 import {point} from '@turf/helpers';
-import {FeatureCollection, Position} from 'geojson';
+import type {Position} from 'geojson';
 import {PointerMoveEvent, StartDraggingEvent, StopDraggingEvent} from '../edit-modes/types';
 import {EditAction, ModeHandler} from './mode-handler';
-import { FeatureCollectionWithSupportedGeometry, SupportedGeometry } from '../utils/types';
+import {FeatureCollectionWithSupportedGeometry} from '../utils/types';
 
 // TODO edit-modes: delete handlers once EditMode fully implemented
 export class TranslateHandler extends ModeHandler {

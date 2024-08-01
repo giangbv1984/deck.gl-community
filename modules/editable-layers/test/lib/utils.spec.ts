@@ -11,7 +11,7 @@ import {
   mix,
   nearestPointOnProjectedLine
 } from '../../src/utils/utils';
-import {
+import type {
   Position,
   Feature,
   LineString as LineStringType,
@@ -118,7 +118,7 @@ describe('recursivelyTraverseNestedArrays()', () => {
   });
 
   it('should work for LineString', () => {
-    const results:any = [];
+    const results = [];
     recursivelyTraverseNestedArrays(LineString.geometry.coordinates, [], (array, prefix) => {
       results.push({
         array,
@@ -131,7 +131,7 @@ describe('recursivelyTraverseNestedArrays()', () => {
   });
 
   it('should work for Polygon', () => {
-    const results:any = [];
+    const results = [];
     recursivelyTraverseNestedArrays(Polygon.geometry.coordinates, [], (array, prefix) => {
       results.push({
         array,
@@ -146,7 +146,7 @@ describe('recursivelyTraverseNestedArrays()', () => {
   });
 
   it('should work for MultiPolygon', () => {
-    const results:any = [];
+    const results = [];
     recursivelyTraverseNestedArrays(MultiPolygon.geometry.coordinates, [], (array, prefix) => {
       results.push({
         array,

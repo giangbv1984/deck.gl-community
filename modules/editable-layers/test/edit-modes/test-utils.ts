@@ -3,7 +3,7 @@
 // Copyright (c) vis.gl contributors
 
 import {vi} from 'vitest';
-import {Position, FeatureCollection} from 'geojson';
+import type {Position, FeatureCollection} from 'geojson';
 import {
   ModeProps,
   ClickEvent,

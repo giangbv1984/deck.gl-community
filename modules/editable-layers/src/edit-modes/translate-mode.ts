@@ -7,7 +7,7 @@ import turfDistance from '@turf/distance';
 import clone from '@turf/clone';
 import {point} from '@turf/helpers';
 import WebMercatorViewport from 'viewport-mercator-project';
-import {FeatureCollection, Position} from 'geojson';
+import type {FeatureCollection, Position} from 'geojson';
 import {
   PointerMoveEvent,
   StartDraggingEvent,
@@ -19,7 +19,7 @@ import {mapCoords} from './utils';
 import {translateFromCenter} from '../utils/translate-from-center';
 import {GeoJsonEditMode, GeoJsonEditAction} from './geojson-edit-mode';
 import {ImmutableFeatureCollection} from './immutable-feature-collection';
-import { FeatureCollectionWithSupportedGeometry, FeatureWithSupportedGeometry } from '../utils/types';
+import {FeatureCollectionWithSupportedGeometry} from '../utils/types';
 
 export class TranslateMode extends GeoJsonEditMode {
   _geometryBeforeTranslate: FeatureCollectionWithSupportedGeometry | null | undefined;
@@ -49,13 +49,19 @@ export class TranslateMode extends GeoJsonEditMode {
     event.cancelPan();
   }
 
-  handlePointerMove(event: PointerMoveEvent, props: ModeProps<FeatureCollectionWithSupportedGeometry>) {
+  handlePointerMove(
+    event: PointerMoveEvent,
+    props: ModeProps<FeatureCollectionWithSupportedGeometry>
+  ) {
     this._isTranslatable = this.isSelectionPicked(event.pointerDownPicks || event.picks, props);
 
     this.updateCursor(props);
   }
 
-  handleStartDragging(event: StartDraggingEvent, props: ModeProps<FeatureCollectionWithSupportedGeometry>) {
+  handleStartDragging(
+    event: StartDraggingEvent,
+    props: ModeProps<FeatureCollectionWithSupportedGeometry>
+  ) {
     if (!this._isTranslatable) {
       return;
     }
@@ -63,7 +69,10 @@ export class TranslateMode extends GeoJsonEditMode {
     this._geometryBeforeTranslate = this.getSelectedFeaturesAsFeatureCollection(props);
   }
 
-  handleStopDragging(event: StopDraggingEvent, props: ModeProps<FeatureCollectionWithSupportedGeometry>) {
+  handleStopDragging(
+    event: StopDraggingEvent,
+    props: ModeProps<FeatureCollectionWithSupportedGeometry>
+  ) {
     if (this._geometryBeforeTranslate) {
       // Translate the geometry
       const editAction = this.getTranslateAction(
@@ -145,7 +154,7 @@ export class TranslateMode extends GeoJsonEditMode {
       const direction = turfBearing(p1, p2);
 
       const movedFeatures = this._geometryBeforeTranslate.features.map((feature) =>
-        translateFromCenter(clone(feature as FeatureWithSupportedGeometry), distanceMoved, direction)
+        translateFromCenter(clone(feature), distanceMoved, direction)
       );
 
       for (let i = 0; i < selectedIndexes.length; i++) {

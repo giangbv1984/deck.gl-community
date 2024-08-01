@@ -22,7 +22,7 @@ import {
   GuideFeatureCollection
 } from './types';
 import {getPickedEditHandle} from './utils';
-import {FeatureCollection, Position} from 'geojson';
+import type {FeatureCollection, Position} from 'geojson';
 import {GeoJsonEditMode, GeoJsonEditAction, getIntermediatePosition} from './geojson-edit-mode';
 import {ImmutableFeatureCollection} from './immutable-feature-collection';
 import { FeatureCollectionWithSupportedGeometry } from '../utils/types';
@@ -113,7 +113,7 @@ export class RotateMode extends GeoJsonEditMode {
     event.cancelPan();
   }
 
-  handlePointerMove(event: PointerMoveEvent, props: ModeProps<FeatureCollection>) {
+  handlePointerMove(event: PointerMoveEvent, props: ModeProps<FeatureCollectionWithSupportedGeometry>) {
     if (!this._isRotating) {
       const selectedEditHandle = getPickedEditHandle(event.picks);
       this._selectedEditHandle =

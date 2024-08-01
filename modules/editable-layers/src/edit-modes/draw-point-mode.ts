@@ -3,7 +3,7 @@
 // Copyright (c) vis.gl contributors
 
 import {ClickEvent, PointerMoveEvent, ModeProps, TentativeFeature} from './types';
-import {FeatureCollection, Point} from 'geojson';
+import type {FeatureCollection, Point} from 'geojson';
 import {GeoJsonEditMode} from './geojson-edit-mode';
 import { FeatureCollectionWithSupportedGeometry } from '../utils/types';
 

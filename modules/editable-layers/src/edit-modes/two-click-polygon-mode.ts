@@ -11,9 +11,9 @@ import {
   GuideFeatureCollection,
   TentativeFeature
 } from './types';
-import {Polygon, FeatureCollection, Feature, Position} from 'geojson';
+import type {Polygon, FeatureCollection, Feature, Position} from 'geojson';
 import {GeoJsonEditMode} from './geojson-edit-mode';
-import { FeatureCollectionWithSupportedGeometry } from '../utils/types';
+import {FeatureCollectionWithSupportedGeometry} from '../utils/types';
 
 export class TwoClickPolygonMode extends GeoJsonEditMode {
   handleClick(event: ClickEvent, props: ModeProps<FeatureCollectionWithSupportedGeometry>) {
@@ -27,7 +27,7 @@ export class TwoClickPolygonMode extends GeoJsonEditMode {
     this.checkAndFinishPolygon(props);
   }
 
-  handleStartDragging(event: StartDraggingEvent, props: ModeProps<FeatureCollection>): void {
+  handleStartDragging(event: StartDraggingEvent, props: ModeProps<FeatureCollectionWithSupportedGeometry>): void {
     if (!props.modeConfig || !props.modeConfig.dragToDraw) {
       // handled in click handlers
       return;
@@ -37,7 +37,10 @@ export class TwoClickPolygonMode extends GeoJsonEditMode {
     event.cancelPan();
   }
 
-  handleStopDragging(event: StopDraggingEvent, props: ModeProps<FeatureCollectionWithSupportedGeometry>): void {
+  handleStopDragging(
+    event: StopDraggingEvent,
+    props: ModeProps<FeatureCollectionWithSupportedGeometry>
+  ): void {
     if (!props.modeConfig || !props.modeConfig.dragToDraw) {
       // handled in click handlers
       return;
@@ -116,12 +119,17 @@ export class TwoClickPolygonMode extends GeoJsonEditMode {
     return null;
   }
 
-  handlePointerMove(event: PointerMoveEvent, props: ModeProps<FeatureCollection>) {
+  handlePointerMove(
+    event: PointerMoveEvent,
+    props: ModeProps<FeatureCollectionWithSupportedGeometry>
+  ) {
     props.onUpdateCursor('cell');
     super.handlePointerMove(event, props);
   }
 
-  createTentativeFeature(props: ModeProps<FeatureCollection>): TentativeFeature {
+  createTentativeFeature(
+    props: ModeProps<FeatureCollectionWithSupportedGeometry>
+  ): TentativeFeature {
     const {lastPointerMoveEvent} = props;
     const clickSequence = this.getClickSequence();
 

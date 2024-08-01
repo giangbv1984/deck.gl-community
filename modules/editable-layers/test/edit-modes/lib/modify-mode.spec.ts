@@ -11,7 +11,7 @@ import {
   createStartDraggingEvent,
   createStopDraggingEvent
 } from '../test-utils';
-import {FeatureCollection, Position, Point, LineString, Feature} from 'geojson';
+import type {Position, Point, LineString, Feature} from 'geojson';
 import { FeatureCollectionWithSupportedGeometry } from '../../../src/utils/types';
 
 let pointFeature: Feature<Point>;

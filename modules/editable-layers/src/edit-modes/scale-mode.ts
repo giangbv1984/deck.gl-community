@@ -12,7 +12,7 @@ import {coordEach} from '@turf/meta';
 import turfDistance from '@turf/distance';
 import turfTransformScale from '@turf/transform-scale';
 import {getCoord, getGeom} from '@turf/invariant';
-import {FeatureCollection, Position} from 'geojson';
+import type {Position} from 'geojson';
 import {
   ModeProps,
   PointerMoveEvent,
@@ -25,7 +25,7 @@ import {
 import {getPickedEditHandle} from './utils';
 import {GeoJsonEditMode} from './geojson-edit-mode';
 import {ImmutableFeatureCollection} from './immutable-feature-collection';
-import { FeatureCollectionWithSupportedGeometry } from '../utils/types';
+import {FeatureCollectionWithSupportedGeometry} from '../utils/types';
 
 export class ScaleMode extends GeoJsonEditMode {
   _geometryBeingScaled: FeatureCollectionWithSupportedGeometry | null | undefined;
@@ -34,7 +34,9 @@ export class ScaleMode extends GeoJsonEditMode {
   _cursor: string | null | undefined;
   _isScaling = false;
 
-  _isSinglePointGeometrySelected = (geometry: FeatureCollectionWithSupportedGeometry | null | undefined): boolean => {
+  _isSinglePointGeometrySelected = (
+    geometry: FeatureCollectionWithSupportedGeometry | null | undefined
+  ): boolean => {
     const {features} = geometry || {};
     if (Array.isArray(features) && features.length === 1) {
       const {type}: {type: string} = getGeom(features[0]);
@@ -65,7 +67,10 @@ export class ScaleMode extends GeoJsonEditMode {
     );
   };
 
-  _getUpdatedData = (props: ModeProps<FeatureCollectionWithSupportedGeometry>, editedData: FeatureCollectionWithSupportedGeometry) => {
+  _getUpdatedData = (
+    props: ModeProps<FeatureCollectionWithSupportedGeometry>,
+    editedData: FeatureCollectionWithSupportedGeometry
+  ) => {
     let updatedData = new ImmutableFeatureCollection(props.data);
     const selectedIndexes = props.selectedIndexes;
     for (let i = 0; i < selectedIndexes.length; i++) {
@@ -135,7 +140,10 @@ export class ScaleMode extends GeoJsonEditMode {
     }
   };
 
-  handlePointerMove(event: PointerMoveEvent, props: ModeProps<FeatureCollectionWithSupportedGeometry>) {
+  handlePointerMove(
+    event: PointerMoveEvent,
+    props: ModeProps<FeatureCollectionWithSupportedGeometry>
+  ) {
     if (!this._isScaling) {
       const selectedEditHandle = getPickedEditHandle(event.picks);
       this._selectedEditHandle =
@@ -147,7 +155,10 @@ export class ScaleMode extends GeoJsonEditMode {
     }
   }
 
-  handleStartDragging(event: StartDraggingEvent, props: ModeProps<FeatureCollectionWithSupportedGeometry>) {
+  handleStartDragging(
+    event: StartDraggingEvent,
+    props: ModeProps<FeatureCollectionWithSupportedGeometry>
+  ) {
     if (this._selectedEditHandle) {
       this._isScaling = true;
       this._geometryBeingScaled = this.getSelectedFeaturesAsFeatureCollection(props);
@@ -174,7 +185,10 @@ export class ScaleMode extends GeoJsonEditMode {
     event.cancelPan();
   }
 
-  handleStopDragging(event: StopDraggingEvent, props: ModeProps<FeatureCollectionWithSupportedGeometry>) {
+  handleStopDragging(
+    event: StopDraggingEvent,
+    props: ModeProps<FeatureCollectionWithSupportedGeometry>
+  ) {
     if (this._isScaling) {
       // Scale the geometry
       const scaleAction = this.getScaleAction(

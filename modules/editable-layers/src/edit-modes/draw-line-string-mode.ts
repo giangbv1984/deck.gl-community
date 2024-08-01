@@ -4,7 +4,7 @@
 
 import distance from '@turf/distance';
 import {memoize} from '../utils/memoize';
-import {LineString, FeatureCollection, Position} from 'geojson';
+import type {LineString, Position} from 'geojson';
 import {
   ClickEvent,
   PointerMoveEvent,
@@ -15,7 +15,7 @@ import {
 } from './types';
 import {getPickedEditHandle} from './utils';
 import {GeoJsonEditMode} from './geojson-edit-mode';
-import { FeatureCollectionWithSupportedGeometry } from '../utils/types';
+import {FeatureCollectionWithSupportedGeometry} from '../utils/types';
 
 export class DrawLineStringMode extends GeoJsonEditMode {
   // declaration of variables for the calculation of the distance of linestring
@@ -145,7 +145,10 @@ export class DrawLineStringMode extends GeoJsonEditMode {
     return guides;
   }
 
-  handlePointerMove(event: PointerMoveEvent, props: ModeProps<FeatureCollection>) {
+  handlePointerMove(
+    event: PointerMoveEvent,
+    props: ModeProps<FeatureCollectionWithSupportedGeometry>
+  ) {
     props.onUpdateCursor('cell');
   }
 
@@ -154,7 +157,7 @@ export class DrawLineStringMode extends GeoJsonEditMode {
    * nebula geometry mode type
    * @param props properties of geometry nebula mode
    */
-  getTooltips(props: ModeProps<FeatureCollection>): Tooltip[] {
+  getTooltips(props: ModeProps<FeatureCollectionWithSupportedGeometry>): Tooltip[] {
     return this._getTooltips({
       modeConfig: props.modeConfig,
       dist: this.dist

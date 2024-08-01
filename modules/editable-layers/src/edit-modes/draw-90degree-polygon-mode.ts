@@ -19,9 +19,9 @@ import {
   GuideFeatureCollection,
   TentativeFeature
 } from './types';
-import {Polygon, LineString, Position, FeatureCollection} from 'geojson';
+import type {Polygon, LineString, Position, FeatureCollection} from 'geojson';
 import {GeoJsonEditMode} from './geojson-edit-mode';
-import { FeatureCollectionWithSupportedGeometry } from '../utils/types';
+import type {FeatureCollectionWithSupportedGeometry} from '../utils/types';
 
 export class Draw90DegreePolygonMode extends GeoJsonEditMode {
   createTentativeFeature(props: ModeProps<FeatureCollection>): TentativeFeature {
@@ -69,7 +69,7 @@ export class Draw90DegreePolygonMode extends GeoJsonEditMode {
     return tentativeFeature;
   }
 
-  getGuides(props: ModeProps<FeatureCollection>): GuideFeatureCollection {
+  getGuides(props: ModeProps<FeatureCollectionWithSupportedGeometry>): GuideFeatureCollection {
     const guides: GuideFeatureCollection = {
       type: 'FeatureCollection',
       features: []
@@ -94,7 +94,10 @@ export class Draw90DegreePolygonMode extends GeoJsonEditMode {
     return guides;
   }
 
-  handlePointerMove(event: PointerMoveEvent, props: ModeProps<FeatureCollection>) {
+  handlePointerMove(
+    event: PointerMoveEvent,
+    props: ModeProps<FeatureCollectionWithSupportedGeometry>
+  ) {
     props.onUpdateCursor('cell');
     super.handlePointerMove(event, props);
   }
@@ -215,7 +218,7 @@ export class Draw90DegreePolygonMode extends GeoJsonEditMode {
           const fc = lineIntersect(line1, line2);
           if (fc && fc.features.length) {
             // found the intersect point
-            pt = fc.features[0].geometry.coordinates as Position;
+            pt = fc.features[0].geometry.coordinates;
           }
         });
       });

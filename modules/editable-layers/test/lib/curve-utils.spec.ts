@@ -4,7 +4,7 @@
 
 import {it, expect} from 'vitest';
 import {generateCurveFromControlPoints} from '../../src/utils/curve-utils';
-import {Feature} from 'geojson';
+import type {Feature} from 'geojson';
 
 const POLYLINE: Feature = {
   type: 'Feature',

@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: MIT
 // Copyright (c) vis.gl contributors
 
-import {Position} from 'geojson';
+import type {Position} from 'geojson';
 
 export function toDegree(radian: number): number {
   return (radian * 180) / Math.PI;

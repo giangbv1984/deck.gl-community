@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: MIT
 // Copyright (c) vis.gl contributors
 
-import {Feature as GeoJson} from 'geojson';
+import type {Feature as GeoJson} from 'geojson';
 import {Style, SupportedGeometry} from '../utils/types';
 
 export class Feature {

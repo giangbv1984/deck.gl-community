@@ -10,7 +10,15 @@ import {point} from '@turf/helpers';
 import {getCoords} from '@turf/invariant';
 import WebMercatorViewport from 'viewport-mercator-project';
 import {Viewport, Pick, EditHandleFeature, EditHandleType} from './types';
-import {Geometry, Position, Point, LineString, Polygon, Feature, MultiLineString} from 'geojson';
+import type {
+  Geometry,
+  Position,
+  Point,
+  LineString,
+  Polygon,
+  Feature,
+  MultiLineString
+} from 'geojson';
 import {AnyCoordinates} from '../utils/types';
 
 export type NearestPointType = Feature<Point, {dist: number; index: number}>;
@@ -176,7 +184,7 @@ export function nearestPointOnProjectedLine(
 }
 
 export function nearestPointOnLine<G extends LineString | MultiLineString>(
-  lines: Feature<LineString>,
+  lines: Feature<G>,
   inPoint: Feature<Point>,
   viewport?: Viewport
 ): NearestPointType {
@@ -194,8 +202,8 @@ export function nearestPointOnLine<G extends LineString | MultiLineString>(
   }
 
   flattenEach(lines, (line: any) => {
-    const coords: any = getCoords(line);
-    const pointCoords: any = getCoords(inPoint);
+    const coords = getCoords(line);
+    const pointCoords = getCoords(inPoint);
 
     let minDist;
     let to;

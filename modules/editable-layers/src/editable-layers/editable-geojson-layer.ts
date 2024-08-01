@@ -47,7 +47,7 @@ import {PROJECTED_PIXEL_SIZE_MULTIPLIER} from '../constants';
 
 import {EditableLayer, EditableLayerProps} from './editable-layer';
 import {EditablePathLayer} from './editable-path-layer';
-import {Feature, FeatureCollection} from 'geojson';
+import type {Feature, FeatureCollection} from 'geojson';
 
 const DEFAULT_LINE_COLOR: Color = [0x0, 0x0, 0x0, 0x99];
 const DEFAULT_FILL_COLOR: Color = [0x0, 0x0, 0x0, 0x90];
@@ -378,7 +378,7 @@ export class EditableGeoJsonLayer extends EditableLayer<
           mode = modeNameMapping[props.mode];
           // eslint-disable-next-line no-console
           console.warn(
-            "Deprecated use of passing `mode` as a string. Pass the mode's class constructor instead."
+            'Deprecated use of passing `mode` as a string. Pass the mode\'s class constructor instead.'
           );
         } else {
           // Should be an instance of EditMode in this case

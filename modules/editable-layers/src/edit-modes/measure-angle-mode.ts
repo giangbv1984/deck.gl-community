@@ -3,9 +3,9 @@ import turfCenter from '@turf/center';
 import {memoize} from '../utils/memoize';
 
 import {ClickEvent, PointerMoveEvent, Tooltip, ModeProps, GuideFeatureCollection} from './types';
-import {FeatureCollection, Position} from 'geojson';
+import type {FeatureCollection, Position} from 'geojson';
 import {GeoJsonEditMode} from './geojson-edit-mode';
-import { FeatureCollectionWithSupportedGeometry } from '../utils/types';
+import {FeatureCollectionWithSupportedGeometry} from '../utils/types';
 
 const DEFAULT_TOOLTIPS: Tooltip[] = [];
 
@@ -58,7 +58,7 @@ export class MeasureAngleMode extends GeoJsonEditMode {
             },
             properties: {}
           }))
-        }).geometry.coordinates as Position;
+        }).geometry.coordinates;
 
         tooltips = [{position, text}];
       }
@@ -76,7 +76,10 @@ export class MeasureAngleMode extends GeoJsonEditMode {
   }
 
   // Called when the pointer moved, regardless of whether the pointer is down, up, and whether something was picked
-  handlePointerMove(event: PointerMoveEvent, props: ModeProps<FeatureCollectionWithSupportedGeometry>): void {
+  handlePointerMove(
+    event: PointerMoveEvent,
+    props: ModeProps<FeatureCollectionWithSupportedGeometry>
+  ): void {
     props.onUpdateCursor('cell');
   }
 

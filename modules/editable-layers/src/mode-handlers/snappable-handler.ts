@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: MIT
 // Copyright (c) vis.gl contributors
 
-import {Position} from 'geojson';
+import type {Position} from 'geojson';
 import {PointerMoveEvent, StartDraggingEvent, StopDraggingEvent} from '../edit-modes/types';
 import {
   EditHandle,

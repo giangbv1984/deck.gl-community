@@ -4,7 +4,7 @@
 
 import nearestPointOnLine from '@turf/nearest-point-on-line';
 import {point, lineString as toLineString} from '@turf/helpers';
-import {Position, Feature, Point, LineString} from 'geojson';
+import type {Position, Feature, Point, LineString} from 'geojson';
 import {
   recursivelyTraverseNestedArrays,
   nearestPointOnProjectedLine,

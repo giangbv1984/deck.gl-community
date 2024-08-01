@@ -5,7 +5,7 @@
 import hermite from 'cubic-hermite-spline';
 import turfDistance from '@turf/distance';
 import {lineString} from '@turf/helpers';
-import {Feature, MultiLineString, LineString, Position} from 'geojson';
+import type {Feature, MultiLineString, LineString, Position} from 'geojson';
 
 const INTERPOLATION_INTERVAL = 0.005;
 const INTERPOLATION_THRESHOLD = 0.001;

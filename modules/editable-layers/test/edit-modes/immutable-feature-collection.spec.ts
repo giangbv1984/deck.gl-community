@@ -13,7 +13,7 @@ import {
 } from 'geojson';
 import {beforeEach, describe, expect, it} from 'vitest';
 import {ImmutableFeatureCollection} from '../../src/edit-modes/immutable-feature-collection';
-import { FeatureCollectionWithSupportedGeometry } from '../../src/utils/types';
+import {FeatureCollectionWithSupportedGeometry} from '../../src/utils/types';
 
 let pointFeature: Feature<Point>;
 let lineStringFeature: Feature<LineString>;
@@ -161,7 +161,7 @@ describe('getObject()', () => {
 });
 
 describe('replacePosition()', () => {
-  it("doesn't mutate original", () => {
+  it('doesn\'t mutate original', () => {
     const features = new ImmutableFeatureCollection({
       type: 'FeatureCollection',
       features: [pointFeature]
@@ -290,7 +290,7 @@ describe('replacePosition()', () => {
 });
 
 describe('removePosition()', () => {
-  it("doesn't mutate original", () => {
+  it('doesn\'t mutate original', () => {
     const features = new ImmutableFeatureCollection({
       type: 'FeatureCollection',
       features: [lineStringFeature]
@@ -312,7 +312,7 @@ describe('removePosition()', () => {
     });
 
     expect(() => features.removePosition(0, [0])).toThrow(
-      "Can't remove a position from a Point or there'd be nothing left"
+      'Can\'t remove a position from a Point or there\'d be nothing left'
     );
   });
 
@@ -431,7 +431,7 @@ describe('removePosition()', () => {
     });
 
     expect(() => features.removePosition(0, [0])).toThrow(
-      "Can't remove position. LineString must have at least two positions"
+      'Can\'t remove position. LineString must have at least two positions'
     );
   });
 
@@ -445,7 +445,7 @@ describe('removePosition()', () => {
       .removePosition(0, [0, 1]);
 
     expect(() => features.removePosition(0, [0, 1])).toThrow(
-      "Can't remove position. Polygon's outer ring must have at least four positions"
+      'Can\'t remove position. Polygon\'s outer ring must have at least four positions'
     );
   });
 
@@ -508,7 +508,7 @@ describe('removePosition()', () => {
       .removePosition(0, [0, 0]);
 
     expect(() => features.removePosition(0, [0, 0])).toThrow(
-      "Can't remove position. MultiLineString must have at least two positions"
+      'Can\'t remove position. MultiLineString must have at least two positions'
     );
   });
 
@@ -576,13 +576,13 @@ describe('removePosition()', () => {
       .removePosition(0, [0, 0, 1]);
 
     expect(() => features.removePosition(0, [0, 0, 1])).toThrow(
-      "Can't remove position. MultiPolygon's outer ring must have at least four positions"
+      'Can\'t remove position. MultiPolygon\'s outer ring must have at least four positions'
     );
   });
 });
 
 describe('addPosition()', () => {
-  it("doesn't mutate original", () => {
+  it('doesn\'t mutate original', () => {
     const features = new ImmutableFeatureCollection({
       type: 'FeatureCollection',
       features: [lineStringFeature]
@@ -697,7 +697,7 @@ describe('addPosition()', () => {
 });
 
 describe('addFeature()', () => {
-  it("doesn't mutate original", () => {
+  it('doesn\'t mutate original', () => {
     const features = new ImmutableFeatureCollection({
       type: 'FeatureCollection',
       features: []
@@ -739,7 +739,7 @@ describe('addFeature()', () => {
 });
 
 describe('addFeatures()', () => {
-  it("doesn't mutate original", () => {
+  it('doesn\'t mutate original', () => {
     const features = new ImmutableFeatureCollection({
       type: 'FeatureCollection',
       features: []
@@ -793,7 +793,7 @@ describe('deleteFeature()', () => {
     expect(features.getObject().features.length).toEqual(0);
   });
 
-  it("doesn't mutate original", () => {
+  it('doesn\'t mutate original', () => {
     const features = new ImmutableFeatureCollection({
       type: 'FeatureCollection',
       features: [multiPointFeature]
@@ -830,7 +830,7 @@ describe('deleteFeatures()', () => {
     expect(features.getObject().features.length).toEqual(0);
   });
 
-  it("doesn't mutate original", () => {
+  it('doesn\'t mutate original', () => {
     const features = new ImmutableFeatureCollection({
       type: 'FeatureCollection',
       features: [multiPointFeature]
@@ -880,7 +880,6 @@ describe('replacePosition() with elevation', () => {
     };
     const features = new ImmutableFeatureCollection({
       type: 'FeatureCollection',
-      // @ts-expect-error TODO
       features: [elevatedPointFeature]
     });
     const updatedFeatures = features.replacePosition(0, [], [10, 20]);
@@ -906,7 +905,6 @@ describe('replacePosition() with elevation', () => {
     };
     const features = new ImmutableFeatureCollection({
       type: 'FeatureCollection',
-      // @ts-expect-error TODO
       features: [elevatedLineStringFeature]
     });
     const updatedFeatures = features.replacePosition(0, [0], [10, 20]);

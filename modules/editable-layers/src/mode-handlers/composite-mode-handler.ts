@@ -1,4 +1,4 @@
-import {FeatureCollection, Feature, Position} from 'geojson';
+import type {Position} from 'geojson';
 import {
   ClickEvent,
   PointerMoveEvent,
@@ -6,7 +6,7 @@ import {
   StopDraggingEvent
 } from '../edit-modes/types';
 import {ModeHandler, EditAction, EditHandle} from './mode-handler';
-import { FeatureCollectionWithSupportedGeometry, FeatureWithSupportedGeometry } from '../utils/types';
+import {FeatureCollectionWithSupportedGeometry, FeatureWithSupportedGeometry} from '../utils/types';
 
 // TODO edit-modes: delete handlers once EditMode fully implemented
 export class CompositeModeHandler extends ModeHandler {

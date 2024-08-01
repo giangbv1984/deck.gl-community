@@ -15,7 +15,7 @@ import {
   updateRectanglePosition,
   NearestPointType
 } from './utils';
-import {LineString, Point, Polygon, FeatureCollection, Feature} from 'geojson';
+import type {LineString, Point, Polygon, Feature} from 'geojson';
 import {
   ModeProps,
   ClickEvent,
@@ -30,7 +30,7 @@ import {
 } from './types';
 import {GeoJsonEditMode} from './geojson-edit-mode';
 import {ImmutableFeatureCollection} from './immutable-feature-collection';
-import { FeatureCollectionWithSupportedGeometry } from '../utils/types';
+import {FeatureCollectionWithSupportedGeometry} from '../utils/types';
 
 export class ModifyMode extends GeoJsonEditMode {
   // eslint-disable-next-line complexity
@@ -193,7 +193,10 @@ export class ModifyMode extends GeoJsonEditMode {
     }
   }
 
-  handleDragging(event: DraggingEvent, props: ModeProps<FeatureCollectionWithSupportedGeometry>): void {
+  handleDragging(
+    event: DraggingEvent,
+    props: ModeProps<FeatureCollectionWithSupportedGeometry>
+  ): void {
     const editHandle = getPickedEditHandle(event.pointerDownPicks);
 
     if (editHandle) {
@@ -245,12 +248,18 @@ export class ModifyMode extends GeoJsonEditMode {
     });
   }
 
-  handlePointerMove(event: PointerMoveEvent, props: ModeProps<FeatureCollection>): void {
+  handlePointerMove(
+    event: PointerMoveEvent,
+    props: ModeProps<FeatureCollectionWithSupportedGeometry>
+  ): void {
     const cursor = this.getCursor(event);
     props.onUpdateCursor(cursor);
   }
 
-  handleStartDragging(event: StartDraggingEvent, props: ModeProps<FeatureCollectionWithSupportedGeometry>) {
+  handleStartDragging(
+    event: StartDraggingEvent,
+    props: ModeProps<FeatureCollectionWithSupportedGeometry>
+  ) {
     const selectedFeatureIndexes = props.selectedIndexes;
 
     const editHandle = getPickedIntermediateEditHandle(event.picks);
@@ -277,7 +286,10 @@ export class ModifyMode extends GeoJsonEditMode {
     }
   }
 
-  handleStopDragging(event: StopDraggingEvent, props: ModeProps<FeatureCollectionWithSupportedGeometry>) {
+  handleStopDragging(
+    event: StopDraggingEvent,
+    props: ModeProps<FeatureCollectionWithSupportedGeometry>
+  ) {
     const selectedFeatureIndexes = props.selectedIndexes;
     const editHandle = getPickedEditHandle(event.picks);
     if (selectedFeatureIndexes.length && editHandle) {

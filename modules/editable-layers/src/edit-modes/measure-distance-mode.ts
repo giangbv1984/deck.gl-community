@@ -4,7 +4,6 @@
 
 import turfDistance from '@turf/distance';
 import turfMidpoint from '@turf/midpoint';
-import {FeatureCollection, Position} from 'geojson';
 import {
   ClickEvent,
   PointerMoveEvent,
@@ -15,7 +14,7 @@ import {
 } from './types';
 import {getPickedEditHandle} from './utils';
 import {GeoJsonEditMode} from './geojson-edit-mode';
-import { FeatureCollectionWithSupportedGeometry } from '../utils/types';
+import {FeatureCollectionWithSupportedGeometry} from '../utils/types';
 
 export class MeasureDistanceMode extends GeoJsonEditMode {
   _isMeasuringSessionFinished = false;
@@ -89,13 +88,13 @@ export class MeasureDistanceMode extends GeoJsonEditMode {
 
         const tooltipPosition = centerTooltipsOnLine
           ? turfMidpoint(
-              clickSequence[clickSequence.length - 2],
-              clickSequence[clickSequence.length - 1]
-            ).geometry.coordinates
+            clickSequence[clickSequence.length - 2],
+            clickSequence[clickSequence.length - 1]
+          ).geometry.coordinates
           : event.mapCoords;
 
         this._currentTooltips.push({
-          position: tooltipPosition as Position,
+          position: tooltipPosition,
           text: this._formatTooltip(this._currentDistance, modeConfig)
         });
       }
@@ -185,7 +184,10 @@ export class MeasureDistanceMode extends GeoJsonEditMode {
     return guides;
   }
 
-  handlePointerMove(event: PointerMoveEvent, props: ModeProps<FeatureCollectionWithSupportedGeometry>) {
+  handlePointerMove(
+    event: PointerMoveEvent,
+    props: ModeProps<FeatureCollectionWithSupportedGeometry>
+  ) {
     props.onUpdateCursor('cell');
   }
 
@@ -203,7 +205,7 @@ export class MeasureDistanceMode extends GeoJsonEditMode {
 
       const tooltipPosition = centerTooltipsOnLine
         ? (turfMidpoint(positions[positions.length - 1], lastPointerMoveEvent.mapCoords).geometry
-            .coordinates as Position)
+          .coordinates)
         : lastPointerMoveEvent.mapCoords;
 
       return [

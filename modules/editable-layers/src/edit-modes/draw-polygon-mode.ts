@@ -12,13 +12,15 @@ import {
   TentativeFeature,
   GuideFeature
 } from './types';
-import {Polygon, FeatureCollection} from 'geojson';
+import type {Polygon} from 'geojson';
 import {getPickedEditHandle} from './utils';
 import {GeoJsonEditMode} from './geojson-edit-mode';
-import { FeatureCollectionWithSupportedGeometry } from '../utils/types';
+import type {FeatureCollectionWithSupportedGeometry} from '../utils/types';
 
 export class DrawPolygonMode extends GeoJsonEditMode {
-  createTentativeFeature(props: ModeProps<FeatureCollectionWithSupportedGeometry>): TentativeFeature {
+  createTentativeFeature(
+    props: ModeProps<FeatureCollectionWithSupportedGeometry>
+  ): TentativeFeature {
     const {lastPointerMoveEvent} = props;
     const clickSequence = this.getClickSequence();
 
@@ -170,7 +172,10 @@ export class DrawPolygonMode extends GeoJsonEditMode {
     }
   }
 
-  handlePointerMove(event: PointerMoveEvent, props: ModeProps<FeatureCollectionWithSupportedGeometry>) {
+  handlePointerMove(
+    event: PointerMoveEvent,
+    props: ModeProps<FeatureCollectionWithSupportedGeometry>
+  ) {
     props.onUpdateCursor('cell');
     super.handlePointerMove(event, props);
   }
